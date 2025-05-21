@@ -1,0 +1,14 @@
+package com.psi2.donaciones.service;
+
+import com.psi2.donaciones.dto.UsuarioDto;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.List;
+
+public interface UsuarioService extends UserDetailsService {
+    UsuarioDto createUsuario(UsuarioDto usuarioDto);
+    List<UsuarioDto> getAllUsuarios();
+    UsuarioDto getUsuarioByCi(String ci);
+
+
+}
