@@ -44,9 +44,10 @@ public class InventarioExternoServiceImpl implements InventarioExternoService {
 
     @Override
     public ProductoDto consultarProducto(String idProducto) {
-        ResponseEntity<ProductoDto> response = 
+        ResponseEntity<ProductoDto> response =
                 restTemplate.getForEntity(inventarioApiUrl + "/inventario/stock/articulo/" + idProducto, ProductoDto.class);
-        
+
+        System.out.println("Producto Consultado: " + response.getBody());
         return response.getBody();
     }
 
