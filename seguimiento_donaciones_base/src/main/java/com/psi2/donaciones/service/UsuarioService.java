@@ -9,6 +9,7 @@ public interface UsuarioService extends UserDetailsService {
     UsuarioDto createUsuario(UsuarioDto usuarioDto);
     List<UsuarioDto> getAllUsuarios();
     UsuarioDto getUsuarioByCi(String ci);
+    UsuarioDto registerFromGlobal(String nombre, String apellido, String email, String ci, String password, String telefono);
 
 
 }
