@@ -1,15 +1,14 @@
 package com.psi2.donaciones.service.serviceimpl;
 
 import com.psi2.donaciones.dto.*;
+import com.psi2.donaciones.entities.entityMongo.SeguimientoDonacion;
 import com.psi2.donaciones.entities.entityMongo.SolicitudesSinResponder;
 import com.psi2.donaciones.entities.entitySQL.Destino;
+import com.psi2.donaciones.entities.entitySQL.Donacion;
 import com.psi2.donaciones.entities.entitySQL.Solicitante;
 import com.psi2.donaciones.entities.entitySQL.Solicitud;
 import com.psi2.donaciones.mapper.SolicitudMapper;
-import com.psi2.donaciones.repository.DestinoRepository;
-import com.psi2.donaciones.repository.SolicitanteRepository;
-import com.psi2.donaciones.repository.SolicitudRepository;
-import com.psi2.donaciones.repository.SolicitudesSinResponderRepository;
+import com.psi2.donaciones.repository.*;
 import com.psi2.donaciones.service.InventarioExternoService;
 import com.psi2.donaciones.service.SolicitudService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,12 @@ public class SolicitudServiceImpl implements SolicitudService {
 
     @Autowired
     private InventarioExternoService inventarioExternoService;
+
+    @Autowired
+    private DonacionRepository donacionRepository;
+
+    @Autowired
+    private SeguimientoDonacionRepository seguimientoDonacionRepository;
 
     @Override
     public List<SolicitudDto> getAllSolicitudes() {
@@ -220,6 +225,65 @@ public class SolicitudServiceImpl implements SolicitudService {
         return resultado;
 
     }
+
+    @Override
+    public List<SolicitudDonacionDto> obtenerSolicitudesConDonacionesPendientes() {
+        List<Solicitud> solicitudesAprobadas = solicitudRepository.findAll().stream()
+                .filter(s -> Boolean.TRUE.equals(s.getAprobada()))
+                .collect(Collectors.toList());
+
+        List<Donacion> todasLasDonaciones = donacionRepository.findAll();
+        List<SeguimientoDonacion> todosLosSeguimientos = seguimientoDonacionRepository.findAll();
+
+        List<SolicitudDonacionDto> resultado = new ArrayList<>();
+
+        for (Solicitud solicitud : solicitudesAprobadas) {
+            Donacion donacionEncontrada = null;
+
+            // Buscar donación correspondiente a esta solicitud
+            for (Donacion donacion : todasLasDonaciones) {
+                if (donacion.getSolicitud() != null &&
+                        donacion.getSolicitud().getIdSolicitud().equals(solicitud.getIdSolicitud())) {
+                    donacionEncontrada = donacion;
+                    break;
+                }
+            }
+
+            if (donacionEncontrada != null) {
+                SeguimientoDonacion seguimientoEncontrado = null;
+
+                // Buscar seguimiento correspondiente a esta donación
+                for (SeguimientoDonacion seguimiento : todosLosSeguimientos) {
+                    if (seguimiento.getIdDonacion() != null &&
+                            seguimiento.getIdDonacion().equals(donacionEncontrada.getIdDonacion())) {
+                        seguimientoEncontrado = seguimiento;
+                        break;
+                    }
+                }
+
+                String estado = (seguimientoEncontrado != null) ? seguimientoEncontrado.getEstado() : null;
+
+                if (estado != null && (
+                        estado.equalsIgnoreCase("Pendiente") ||
+                                estado.equalsIgnoreCase("Iniciando Armado de paquete") ||
+                                estado.equalsIgnoreCase("Paquete listo")
+                )) {
+                    SolicitudDonacionDto dto = new SolicitudDonacionDto();
+                    dto.setIdSolicitud(solicitud.getIdSolicitud());
+                    dto.setIdDonacion(donacionEncontrada.getIdDonacion());
+                    dto.setFechaSolicitud(solicitud.getFechaSolicitud());
+                    dto.setAprobada(solicitud.getAprobada());
+                    dto.setCategoria(solicitud.getCategoria());
+                    dto.setListaProductos(solicitud.getListaProductos());
+                    resultado.add(dto);
+                }
+            }
+        }
+
+        return resultado;
+    }
+
+
 
 
 

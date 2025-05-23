@@ -225,12 +225,12 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
             solicitudRepository.save(solicitud);
 
             Map<String, Integer> productosDescontar = obtenerProductosDeSolicitud(solicitudSinResponder);
-            boolean descontado = inventarioExternoService.descontarProductos(productosDescontar);
+            //boolean descontado = inventarioExternoService.descontarProductos(productosDescontar);
             inventarioExternoService.verificarStockBajo();
 
-            if (!descontado) {
+            /*if (!descontado) {
                 throw new RuntimeException("No se pudo descontar del inventario");
-            }
+            }*/
             
             donacionService.crearDonacionDesdeSolicitud(solicitud.getIdSolicitud(),ciEncargado);
             
