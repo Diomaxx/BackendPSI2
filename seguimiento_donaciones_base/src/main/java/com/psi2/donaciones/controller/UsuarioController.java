@@ -30,7 +30,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
-    @PostMapping("/usuarios/registro-global")
+    @PostMapping("/registro-global")
     public ResponseEntity<UsuarioDto> registerFromGlobal(@RequestBody RegistroGlobalDto dto) {
         UsuarioDto usuario = usuarioService.registerFromGlobal(
                 dto.getNombre(),
