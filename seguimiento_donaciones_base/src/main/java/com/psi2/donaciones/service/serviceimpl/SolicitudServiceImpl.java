@@ -228,49 +228,24 @@ public class SolicitudServiceImpl implements SolicitudService {
 
     @Override
     public List<SolicitudDonacionDto> obtenerSolicitudesConDonacionesPendientes() {
-        List<Solicitud> solicitudesAprobadas = solicitudRepository.findAll().stream()
-                .filter(s -> Boolean.TRUE.equals(s.getAprobada()))
+        List<SeguimientoDonacion> seguimientosPendientes = seguimientoDonacionRepository.findAll().stream()
+                .filter(s -> {
+                    String estado = s.getEstado();
+                    return estado != null && estado.equalsIgnoreCase("Pendiente");
+                })
                 .collect(Collectors.toList());
-
-        List<Donacion> todasLasDonaciones = donacionRepository.findAll();
-        List<SeguimientoDonacion> todosLosSeguimientos = seguimientoDonacionRepository.findAll();
 
         List<SolicitudDonacionDto> resultado = new ArrayList<>();
 
-        for (Solicitud solicitud : solicitudesAprobadas) {
-            Donacion donacionEncontrada = null;
+        for (SeguimientoDonacion seguimiento : seguimientosPendientes) {
+            Optional<Donacion> donacion = donacionRepository.findById(Integer.valueOf(seguimiento.getIdDonacion()));
 
-            // Buscar donación correspondiente a esta solicitud
-            for (Donacion donacion : todasLasDonaciones) {
-                if (donacion.getSolicitud() != null &&
-                        donacion.getSolicitud().getIdSolicitud().equals(solicitud.getIdSolicitud())) {
-                    donacionEncontrada = donacion;
-                    break;
-                }
-            }
-
-            if (donacionEncontrada != null) {
-                SeguimientoDonacion seguimientoEncontrado = null;
-
-                // Buscar seguimiento correspondiente a esta donación
-                for (SeguimientoDonacion seguimiento : todosLosSeguimientos) {
-                    if (seguimiento.getIdDonacion() != null &&
-                            seguimiento.getIdDonacion().equals(donacionEncontrada.getIdDonacion())) {
-                        seguimientoEncontrado = seguimiento;
-                        break;
-                    }
-                }
-
-                String estado = (seguimientoEncontrado != null) ? seguimientoEncontrado.getEstado() : null;
-
-                if (estado != null && (
-                        estado.equalsIgnoreCase("Pendiente") ||
-                                estado.equalsIgnoreCase("Iniciando Armado de paquete") ||
-                                estado.equalsIgnoreCase("Paquete listo")
-                )) {
+            if (donacion != null) {
+                Solicitud solicitud = donacion.get().getSolicitud();
+                if (solicitud != null) {
                     SolicitudDonacionDto dto = new SolicitudDonacionDto();
                     dto.setIdSolicitud(solicitud.getIdSolicitud());
-                    dto.setIdDonacion(donacionEncontrada.getIdDonacion());
+                    dto.setIdDonacion(donacion.get().getIdDonacion());
                     dto.setFechaSolicitud(solicitud.getFechaSolicitud());
                     dto.setAprobada(solicitud.getAprobada());
                     dto.setCategoria(solicitud.getCategoria());
@@ -282,6 +257,7 @@ public class SolicitudServiceImpl implements SolicitudService {
 
         return resultado;
     }
+
 
 
 
