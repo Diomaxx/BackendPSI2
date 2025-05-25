@@ -49,6 +49,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         usuario.setNombre(usuarioDto.getNombre());
         usuario.setApellido(usuarioDto.getApellido());
+        usuario.setTelefono(usuarioDto.getTelefono());
         usuario.setCorreoElectronico(usuarioDto.getCorreoElectronico());
         usuario.setCi(usuarioDto.getCi());
         usuario.setActive(true);
@@ -60,7 +61,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuarioDto.getCorreoElectronico(),
                 usuarioDto.getCi(),
                 usuarioDto.getContrasena(),
-                "777"
+                usuarioDto.getTelefono()
         );
         usuario.setContrasena(passwordEncoder.encode(usuarioDto.getContrasena()));
 
@@ -70,6 +71,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 saved.getIdUsuario(),
                 saved.getNombre(),
                 saved.getApellido(),
+                saved.getTelefono(),
                 saved.getCorreoElectronico(),
                 saved.getCi(),
                 null,
@@ -145,6 +147,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNombre(nombre);
         usuario.setApellido(apellido);
+        usuario.setTelefono(telefono);
         usuario.setCorreoElectronico(email);
         usuario.setCi(ci);
         usuario.setAdmin(false);
@@ -158,6 +161,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 saved.getIdUsuario(),
                 saved.getNombre(),
                 saved.getApellido(),
+                saved.getTelefono(),
                 saved.getCorreoElectronico(),
                 saved.getCi(),
                 null,

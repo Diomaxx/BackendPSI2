@@ -10,6 +10,7 @@ public class UsuarioMapper {
                 usuario.getIdUsuario(),
                 usuario.getNombre(),
                 usuario.getApellido(),
+                usuario.getTelefono(),
                 usuario.getCorreoElectronico(),
                 usuario.getCi(),
                 usuario.getContrasena(),
@@ -23,6 +24,7 @@ public class UsuarioMapper {
         usuario.setIdUsuario(dto.getIdUsuario());
         usuario.setNombre(dto.getNombre());
         usuario.setApellido(dto.getApellido());
+        usuario.setTelefono(dto.getTelefono());
         usuario.setCorreoElectronico(dto.getCorreoElectronico());
         usuario.setCi(dto.getCi());
         usuario.setContrasena(dto.getContrasena());
