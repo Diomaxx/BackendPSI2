@@ -12,15 +12,11 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SolicitudDonacionDto {
-    private Integer idSolicitud;
-    private Date fechaInicioIncendio;
-    private Date fechaSolicitud;
-    private Boolean aprobada;
-    private Integer cantidadPersonas;
-    private String justificacion;
-    private String categoria;
-    private String listaProductos;
     private Integer idDonacion;
-
+    private Date fecha_pedido;
+    private String descripcion;
+    private String ubicacion;
+    private Double latitud_destino;
+    private Double longitud_destino;
 }
 

@@ -244,12 +244,12 @@ public class SolicitudServiceImpl implements SolicitudService {
                 Solicitud solicitud = donacion.get().getSolicitud();
                 if (solicitud != null) {
                     SolicitudDonacionDto dto = new SolicitudDonacionDto();
-                    dto.setIdSolicitud(solicitud.getIdSolicitud());
                     dto.setIdDonacion(donacion.get().getIdDonacion());
-                    dto.setFechaSolicitud(solicitud.getFechaSolicitud());
-                    dto.setAprobada(solicitud.getAprobada());
-                    dto.setCategoria(solicitud.getCategoria());
-                    dto.setListaProductos(solicitud.getListaProductos());
+                    dto.setFecha_pedido(donacion.get().getFechaAprobacion());
+                    dto.setDescripcion(solicitud.getListaProductos());
+                    dto.setUbicacion(solicitud.getDestino().getDireccion());
+                    dto.setLatitud_destino(solicitud.getDestino().getLatitud());
+                    dto.setLongitud_destino(solicitud.getDestino().getLongitud());
                     resultado.add(dto);
                 }
             }
