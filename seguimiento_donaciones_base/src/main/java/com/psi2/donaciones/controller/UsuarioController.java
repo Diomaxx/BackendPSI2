@@ -32,7 +32,7 @@ public class UsuarioController {
 
     @GetMapping("/noAdmin")
     public ResponseEntity<List<UsuarioDto>> getAllNoAdmins() {
-        List<UsuarioDto> usuarios = usuarioService.getAllUsuarios();
+        List<UsuarioDto> usuarios = usuarioService.getAllUsuariosNoAdmin();
         return ResponseEntity.ok(usuarios);
     }
 
