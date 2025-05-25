@@ -135,8 +135,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         UsuarioMapper usuarioMapper = new UsuarioMapper();
         for (Usuario usuario : usuarios) {
             if (usuario.getCi().equals(ci)) {
-                return usuarioMapper.toDto(usuario);
-            }
+                UsuarioDto dto = usuarioMapper.toDto(usuario);
+                dto.setContrasena(null);
+                return dto;            }
         }
 
         throw new RuntimeException("Usuario no encontrado con CI: " + ci);

@@ -36,6 +36,13 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
+    @GetMapping("/ci/{ci}")
+    public ResponseEntity<UsuarioDto> getUsuarioByCi(@PathVariable String ci) {
+        UsuarioDto usuario = usuarioService.getUsuarioByCi(ci);
+        return ResponseEntity.ok(usuario);
+    }
+
+
     @PostMapping("/registro-global")
     public ResponseEntity<UsuarioDto> registerFromGlobal(@RequestBody RegistroGlobalDto dto) {
         UsuarioDto usuario = usuarioService.registerFromGlobal(
