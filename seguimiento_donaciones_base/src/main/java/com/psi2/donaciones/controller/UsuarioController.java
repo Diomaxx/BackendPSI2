@@ -30,6 +30,12 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
+    @GetMapping("/noAdmin")
+    public ResponseEntity<List<UsuarioDto>> getAllNoAdmins() {
+        List<UsuarioDto> usuarios = usuarioService.getAllUsuarios();
+        return ResponseEntity.ok(usuarios);
+    }
+
     @PostMapping("/registro-global")
     public ResponseEntity<UsuarioDto> registerFromGlobal(@RequestBody RegistroGlobalDto dto) {
         UsuarioDto usuario = usuarioService.registerFromGlobal(
@@ -42,6 +48,19 @@ public class UsuarioController {
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
+
+    @PostMapping("/active/{id}")
+    public ResponseEntity<UsuarioDto> toggleActivo(@PathVariable Integer id) {
+        UsuarioDto actualizado = usuarioService.toggleActive(id);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    @PostMapping("/admin/{id}")
+    public ResponseEntity<UsuarioDto> hacerAdmin(@PathVariable Integer id) {
+        UsuarioDto actualizado = usuarioService.Admin(id);
+        return ResponseEntity.ok(actualizado);
+    }
+
 
 
 }

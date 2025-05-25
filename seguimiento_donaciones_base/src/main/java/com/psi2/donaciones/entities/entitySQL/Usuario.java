@@ -28,4 +28,7 @@ public class Usuario {
     @Column(unique = true)
     private String correoElectronico;
 
+    private Boolean admin;
+    private Boolean active;
+
 }

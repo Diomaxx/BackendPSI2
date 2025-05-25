@@ -17,4 +17,6 @@ public class UsuarioDto {
     private String correoElectronico;
     private String ci;
     private String contrasena;
+    private Boolean admin;
+    private Boolean active;
 }

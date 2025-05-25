@@ -51,6 +51,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setApellido(usuarioDto.getApellido());
         usuario.setCorreoElectronico(usuarioDto.getCorreoElectronico());
         usuario.setCi(usuarioDto.getCi());
+        usuario.setActive(true);
+        usuario.setAdmin(false);
 
         enviarRegistroAGlobal(
                 usuarioDto.getNombre(),
@@ -70,7 +72,9 @@ public class UsuarioServiceImpl implements UsuarioService {
                 saved.getApellido(),
                 saved.getCorreoElectronico(),
                 saved.getCi(),
-                null
+                null,
+                saved.getAdmin(),
+                saved.getActive()
         );
     }
 
@@ -81,6 +85,46 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .map(UsuarioMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<UsuarioDto> getAllUsuariosNoAdmin() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+
+        return usuarios.stream()
+                .filter(usuario -> Boolean.FALSE.equals(usuario.getAdmin()))
+                .map(UsuarioMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UsuarioDto Admin(Integer idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + idUsuario));
+
+        usuario.setAdmin(true);
+
+        usuarioRepository.save(usuario);
+        UsuarioDto dto = UsuarioMapper.toDto(usuario);
+        dto.setContrasena(null);
+        return dto;
+    }
+
+    @Override
+    public UsuarioDto toggleActive(Integer idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + idUsuario));
+
+        Boolean estadoActual = usuario.getActive();
+        usuario.setActive(estadoActual == null ? true : !estadoActual);
+
+        usuarioRepository.save(usuario);
+        UsuarioDto dto = UsuarioMapper.toDto(usuario);
+        dto.setContrasena(null);
+        return dto;
+    }
+
+
+
 
     @Override
     public UsuarioDto getUsuarioByCi(String ci) {
@@ -103,6 +147,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setApellido(apellido);
         usuario.setCorreoElectronico(email);
         usuario.setCi(ci);
+        usuario.setAdmin(false);
+        usuario.setActive(false);
 
         usuario.setContrasena(passwordEncoder.encode(password));
 
@@ -114,7 +160,9 @@ public class UsuarioServiceImpl implements UsuarioService {
                 saved.getApellido(),
                 saved.getCorreoElectronico(),
                 saved.getCi(),
-                null
+                null,
+                saved.getAdmin(),
+                saved.getActive()
         );
     }
 

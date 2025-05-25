@@ -12,7 +12,9 @@ public class UsuarioMapper {
                 usuario.getApellido(),
                 usuario.getCorreoElectronico(),
                 usuario.getCi(),
-                usuario.getContrasena()
+                usuario.getContrasena(),
+                usuario.getAdmin(),
+                usuario.getActive()
         );
     }
 
@@ -24,6 +26,8 @@ public class UsuarioMapper {
         usuario.setCorreoElectronico(dto.getCorreoElectronico());
         usuario.setCi(dto.getCi());
         usuario.setContrasena(dto.getContrasena());
+        usuario.setAdmin(dto.getAdmin());
+        usuario.setActive(dto.getActive());
         return usuario;
     }
 }
