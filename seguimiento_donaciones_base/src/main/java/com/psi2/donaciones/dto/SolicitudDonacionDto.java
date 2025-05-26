@@ -13,6 +13,7 @@ import java.sql.Date;
 @AllArgsConstructor
 public class SolicitudDonacionDto {
     private Integer idDonacion;
+    private String codigo;
     private Date fecha_pedido;
     private String descripcion;
     private String ubicacion;

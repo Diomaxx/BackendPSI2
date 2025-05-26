@@ -245,6 +245,7 @@ public class SolicitudServiceImpl implements SolicitudService {
                 if (solicitud != null) {
                     SolicitudDonacionDto dto = new SolicitudDonacionDto();
                     dto.setIdDonacion(donacion.get().getIdDonacion());
+                    dto.setCodigo(donacion.get().getCodigo());
                     dto.setFecha_pedido(donacion.get().getFechaAprobacion());
                     dto.setDescripcion(solicitud.getListaProductos());
                     dto.setUbicacion(solicitud.getDestino().getDireccion());
