@@ -50,7 +50,6 @@ public class UsuarioController {
                 dto.getApellido(),
                 dto.getEmail(),
                 dto.getCi(),
-                dto.getPassword(),
                 dto.getTelefono()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
@@ -67,6 +66,16 @@ public class UsuarioController {
         UsuarioDto actualizado = usuarioService.Admin(id);
         return ResponseEntity.ok(actualizado);
     }
+
+    @PostMapping("/newPassword/{ci}")
+    public ResponseEntity<UsuarioDto> actualizarPassword(
+            @PathVariable String ci,
+            @RequestBody UsuarioDto usuarioDto) {
+
+        UsuarioDto dto = usuarioService.actualizarPassword(ci, usuarioDto.getContrasena());
+        return ResponseEntity.ok(dto);
+    }
+
 
 
 

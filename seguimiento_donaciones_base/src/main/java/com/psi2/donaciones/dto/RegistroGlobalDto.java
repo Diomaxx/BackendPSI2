@@ -10,7 +10,6 @@ public class RegistroGlobalDto {
     private String apellido;
     private String email;
     private String ci;
-    private String password;
     private String telefono;
 
 }

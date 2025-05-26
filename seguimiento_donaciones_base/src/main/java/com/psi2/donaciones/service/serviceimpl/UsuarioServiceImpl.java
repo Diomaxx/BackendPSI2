@@ -60,7 +60,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuarioDto.getApellido(),
                 usuarioDto.getCorreoElectronico(),
                 usuarioDto.getCi(),
-                usuarioDto.getContrasena(),
                 usuarioDto.getTelefono()
         );
         usuario.setContrasena(passwordEncoder.encode(usuarioDto.getContrasena()));
@@ -125,6 +124,24 @@ public class UsuarioServiceImpl implements UsuarioService {
         return dto;
     }
 
+    @Override
+    public UsuarioDto actualizarPassword(String ci, String nuevaContrasena) {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        UsuarioMapper usuarioMapper = new UsuarioMapper();
+
+        for (Usuario usuario : usuarios) {
+            if (usuario.getCi().equals(ci)) {
+                usuario.setContrasena(passwordEncoder.encode(nuevaContrasena));
+                usuarioRepository.save(usuario);
+
+                UsuarioDto dto = usuarioMapper.toDto(usuario);
+                dto.setContrasena(null);
+                return dto;
+            }
+        }
+
+        throw new RuntimeException("Usuario no encontrado con CI: " + ci);
+    }
 
 
 
@@ -144,7 +161,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioDto registerFromGlobal(String nombre, String apellido, String email, String ci, String password, String telefono) {
+    public UsuarioDto registerFromGlobal(String nombre, String apellido, String email, String ci, String telefono) {
         Usuario usuario = new Usuario();
         usuario.setNombre(nombre);
         usuario.setApellido(apellido);
@@ -154,7 +171,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setAdmin(false);
         usuario.setActive(false);
 
-        usuario.setContrasena(passwordEncoder.encode(password));
+        usuario.setContrasena(null);
 
         Usuario saved = usuarioRepository.save(usuario);
 
@@ -171,7 +188,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         );
     }
 
-    private void enviarRegistroAGlobal(String nombre, String apellido, String email, String ci, String password, String telefono) {
+    private void enviarRegistroAGlobal(String nombre, String apellido, String email, String ci, String telefono) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://34.9.138.238:2020/global_registro/alasE";
 
@@ -180,7 +197,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         body.put("apellido", apellido);
         body.put("email", email);
         body.put("ci", ci);
-        body.put("password", password);
         body.put("telefono", telefono);
 
         org.springframework.http.HttpHeaders headers = new HttpHeaders();

@@ -11,8 +11,9 @@ public interface UsuarioService extends UserDetailsService {
     UsuarioDto getUsuarioByCi(String ci);
     List<UsuarioDto> getAllUsuariosNoAdmin();
     UsuarioDto Admin(Integer idUsuario);
+    UsuarioDto actualizarPassword(String ci, String nuevaContrasena);
     UsuarioDto toggleActive(Integer idUsuario);
-    UsuarioDto registerFromGlobal(String nombre, String apellido, String email, String ci, String password, String telefono);
+    UsuarioDto registerFromGlobal(String nombre, String apellido, String email, String ci, String telefono);
 
 
 }
