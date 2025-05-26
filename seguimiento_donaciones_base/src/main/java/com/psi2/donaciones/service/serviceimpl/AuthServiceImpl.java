@@ -29,6 +29,10 @@ public class AuthServiceImpl implements AuthService {
         Usuario usuario = usuarioRepository.findByCi(request.getCedulaIdentidad())
                 .orElseThrow(() -> new BadCredentialsException("CI o contraseña incorrectos"));
 
+        if (!usuario.getActive()) {
+            throw new BadCredentialsException("El usuario no está activo. Registrate o Solicita tu activación");
+        }
+
         if (request.getContrasena() == null || request.getContrasena().isBlank()) {
             throw new IllegalArgumentException("La contraseña no puede estar vacía");
         }
