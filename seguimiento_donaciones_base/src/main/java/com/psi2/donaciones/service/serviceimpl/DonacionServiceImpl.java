@@ -359,7 +359,7 @@ public class DonacionServiceImpl implements DonacionService {
         String fileName = "imagen_" + System.currentTimeMillis() + ".jpg";
         String filePath = "C:/temp/imagenesDonacion/" + fileName;  // Guardar la imagen en el directorio externo
 
-        File dir = new File("C:/temp/imagenesDonacion/");
+        File dir = new File("/var/www/html/imagenesDonacion/");
         if (!dir.exists()) {
             dir.mkdirs();
         }
