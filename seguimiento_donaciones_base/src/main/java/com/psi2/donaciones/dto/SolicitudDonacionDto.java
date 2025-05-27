@@ -14,6 +14,7 @@ import java.sql.Date;
 public class SolicitudDonacionDto {
     private Integer idDonacion;
     private String codigo;
+    private String ciUsuario;
     private Date fecha_pedido;
     private String descripcion;
     private String ubicacion;
