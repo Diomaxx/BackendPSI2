@@ -352,24 +352,34 @@ public class DonacionServiceImpl implements DonacionService {
     }
 
     private String procesarImagen(String imagenBase64) throws IOException {
-        String base64Image = imagenBase64.split(",")[1];
+        // Quitar prefijo "data:image/jpeg;base64," si existe
+        String base64Image = imagenBase64.contains(",")
+                ? imagenBase64.split(",")[1]
+                : imagenBase64;
 
+        // Decodificar imagen
         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
+        // Ruta real en el sistema Ubuntu
+        String rutaSistema = "/var/www/html/imagenesDonacion/";
         String fileName = "imagen_" + System.currentTimeMillis() + ".jpg";
-        String filePath = "C:/temp/imagenesDonacion/" + fileName;  // Guardar la imagen en el directorio externo
+        String filePath = rutaSistema + fileName;
 
-        File dir = new File("/var/www/html/imagenesDonacion/");
+        // Crear carpeta si no existe
+        File dir = new File(rutaSistema);
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
+        // Escribir archivo
         try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
             fileOutputStream.write(imageBytes);
         }
 
-        return "/images/" + fileName;
+        // URL pública (ajusta con tu IP o dominio real)
+        return "http://34.123.227.162/imagenesDonacion/" + fileName;
     }
+
 
     private String generarCodigoDonacion(String comunidad) {
         String[] palabras = comunidad.trim().split("\\s+");
