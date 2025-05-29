@@ -132,6 +132,7 @@ public class SolicitudServiceImpl implements SolicitudService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<SolicitudListaDto> obtenerSolicitudesCompletas() {
         List<SolicitudListaDto> resultado = new ArrayList<>();
 
