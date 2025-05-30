@@ -1,5 +1,6 @@
 package com.psi2.donaciones.controller;
 
+import com.psi2.donaciones.dto.AgradecimientoDto;
 import com.psi2.donaciones.dto.DonacionDto;
 import com.psi2.donaciones.dto.NewDonacionDto;
 import com.psi2.donaciones.entities.entitySQL.Donacion;
@@ -36,6 +37,11 @@ public class DonacionController {
     public ResponseEntity<List<NewDonacionDto>> getAllNewDonaciones() {
         List<NewDonacionDto> donaciones = donacionService.getAllNewDonaciones();
         return ResponseEntity.ok(donaciones);
+    }
+
+    @GetMapping("/donantes")
+    public List<AgradecimientoDto> getDonacionesConDonantes() {
+        return donacionService.obtenerDonacionesConDonantes();
     }
 
 

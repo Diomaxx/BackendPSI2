@@ -443,6 +443,7 @@ public class DonacionServiceImpl implements DonacionService {
         return R * c; // en metros
     }
 
+    @Override
     public List<AgradecimientoDto> obtenerDonacionesConDonantes() {
         List<Donacion> donaciones = donacionRepository.findAll();
 
