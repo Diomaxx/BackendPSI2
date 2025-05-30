@@ -1,9 +1,6 @@
 package com.psi2.donaciones.service.serviceimpl;
 
-import com.psi2.donaciones.dto.DonacionDto;
-import com.psi2.donaciones.dto.NewDonacionDto;
-import com.psi2.donaciones.dto.NotificacionesDto;
-import com.psi2.donaciones.dto.SeguimientoDonacionDto;
+import com.psi2.donaciones.dto.*;
 import com.psi2.donaciones.entities.entityMongo.Notificaciones;
 import com.psi2.donaciones.entities.entityMongo.SeguimientoDonacion;
 import com.psi2.donaciones.entities.entitySQL.Destino;
@@ -24,10 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,6 +50,8 @@ public class DonacionServiceImpl implements DonacionService {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private InventarioExternoServiceImpl inventarioExternoServiceImpl;
 
     @Override
     public List<DonacionDto> getAllDonaciones() {
@@ -445,6 +441,29 @@ public class DonacionServiceImpl implements DonacionService {
                         Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c; // en metros
+    }
+
+    public List<AgradecimientoDto> obtenerDonacionesConDonantes() {
+        List<Donacion> donaciones = donacionRepository.findAll();
+
+        return donaciones.stream().map(donacion -> {
+            DonacionDto dto = DonacionMapper.toDto(donacion);
+
+            List<DonanteDto> donantes = new ArrayList<>();
+            try {
+                donantes = inventarioExternoServiceImpl.obtenerDonantesPorCodigo(donacion.getCodigo());
+            } catch (Exception e) {
+                System.err.println("Error obteniendo donantes para donación " + donacion.getCodigo() + ": " + e.getMessage());
+            }
+
+            AgradecimientoDto combinado = new AgradecimientoDto();
+            combinado.setIdDonacion(donacion.getIdDonacion());
+            combinado.setCodigo(donacion.getCodigo());
+            combinado.setImagen(donacion.getImagen());
+            combinado.setFechaEntrega(donacion.getFechaEntrega());
+            combinado.setDonantes(donantes);
+            return combinado;
+        }).collect(Collectors.toList());
     }
 
 

@@ -1,5 +1,6 @@
 package com.psi2.donaciones.service.serviceimpl;
 
+import com.psi2.donaciones.dto.DonanteDto;
 import com.psi2.donaciones.dto.NotificacionesDto;
 import com.psi2.donaciones.dto.ProductoDto;
 import com.psi2.donaciones.entities.entityMongo.Notificaciones;
@@ -8,6 +9,7 @@ import com.psi2.donaciones.repository.NotificacionesRepository;
 import com.psi2.donaciones.service.InventarioExternoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -97,6 +99,20 @@ public class InventarioExternoServiceImpl implements InventarioExternoService {
                 System.out.println("Notificación guardada para: " + nombre);
             }
         }
+    }
+
+    @Override
+    public List<DonanteDto> obtenerDonantesPorCodigo(String codigoDonacion) {
+        String url = inventarioApiUrl + "/paquetes/donantes/" + codigoDonacion;
+
+        ResponseEntity<List<DonanteDto>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<DonanteDto>>() {}
+        );
+
+        return response.getBody();
     }
 
 

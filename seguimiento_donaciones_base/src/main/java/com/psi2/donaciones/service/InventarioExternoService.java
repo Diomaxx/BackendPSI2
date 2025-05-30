@@ -1,5 +1,6 @@
 package com.psi2.donaciones.service;
 
+import com.psi2.donaciones.dto.DonanteDto;
 import com.psi2.donaciones.dto.ProductoDto;
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface InventarioExternoService {
     // Descontar productos del inventario
     boolean descontarProductos(Map<String, Integer> productos);
     void verificarStockBajo();
+    List<DonanteDto> obtenerDonantesPorCodigo(String codigoDonacion);
 } 
