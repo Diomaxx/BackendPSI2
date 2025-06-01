@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -14,12 +15,10 @@ public class SolicitudConPersonalDto {
     private int idSolicitud;
     private Date fechaInicioIncendio;
     private Date fechaSolicitud;
-    private boolean aprobada;
     private int cantidadPersonas;
-    private String justificacion;
     private String categoria;
     private String listaProductos;
     private int idSolicitante;
     private int idDestino;
-    private List<String> personalNecesario;
+    private Map<String, Integer> personalNecesario;
 }

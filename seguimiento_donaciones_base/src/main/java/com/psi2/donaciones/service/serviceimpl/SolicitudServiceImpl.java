@@ -269,53 +269,81 @@ public class SolicitudServiceImpl implements SolicitudService {
                         s.getIdSolicitud(),
                         s.getFechaInicioIncendio(),
                         s.getFechaSolicitud(),
-                        s.getAprobada(),
                         s.getCantidadPersonas(),
-                        s.getJustificacion(),
                         s.getCategoria(),
                         s.getListaProductos(),
                         s.getSolicitante().getIdSolicitante(),
                         s.getDestino().getIdDestino(),
-                        determinarPersonal(s.getCategoria(), s.getCantidadPersonas())
+                        calcularPersonalNecesario(
+                                s.getCategoria(),
+                                s.getCantidadPersonas(),
+                                s.getFechaInicioIncendio(),
+                                s.getFechaSolicitud()
+                        )
                 ))
                 .collect(Collectors.toList());
     }
 
-    private List<String> determinarPersonal(String categoria, int cantidadPersonas) {
-        categoria = categoria.toLowerCase();
-        List<String> personal = new ArrayList<>();
+    private Map<String, Integer> calcularPersonalNecesario(String categoria, int cantidadPersonas, Date fechaInicio, Date fechaSolicitud) {
+        Map<String, Integer> personal = new LinkedHashMap<>();
 
-        switch (categoria) {
+        long diasDiferencia = Math.max(1, (fechaSolicitud.getTime() - fechaInicio.getTime()) / (1000 * 60 * 60 * 24));
+        double factorUrgencia = diasDiferencia > 2 ? 1.5 : 1.0;
+        int escala = (int) Math.ceil((cantidadPersonas / 20.0) * factorUrgencia);
+
+        switch (categoria.toLowerCase()) {
             case "incendio":
-                personal.addAll(List.of("bomberos", "paramédicos", "policía"));
-                if (cantidadPersonas > 20) {
-                    personal.addAll(List.of("voluntarios", "psicólogo"));
-                }
-                break;
-            case "inundacion":
-                personal.addAll(List.of("rescatistas", "paramédicos", "voluntarios"));
+                personal.put("bombero", escala);
+                personal.put("personal de salud", escala);
+                personal.put("policía", escala);
+                personal.put("veterinario", (int) Math.ceil((cantidadPersonas / 40.0) * factorUrgencia));
                 if (cantidadPersonas > 30) {
-                    personal.addAll(List.of("apoyo logístico", "cocineros comunitarios"));
+                    personal.put("psicólogo", 1);
+                    personal.put("voluntario", escala);
                 }
                 break;
+
+            case "inundacion":
+                personal.put("rescatista", escala);
+                personal.put("personal de salud", escala);
+                personal.put("voluntario", escala);
+                personal.put("veterinario", (int) Math.ceil((cantidadPersonas / 40.0) * factorUrgencia));
+                if (cantidadPersonas > 30) {
+                    personal.put("cocinero comunitario", escala);
+                    personal.put("logística", 1);
+                }
+                break;
+
             case "escasez":
-                personal.addAll(List.of("voluntarios", "asistentes de alimentación", "promotores comunitarios"));
+                personal.put("voluntario", escala);
+                personal.put("nutricionista", escala);
+                personal.put("promotor comunitario", escala);
                 if (cantidadPersonas > 40) {
-                    personal.add("coordinador de ayuda alimentaria");
+                    personal.put("coordinador de alimentos", 1);
+                    personal.put("psicólogo", 1);
                 }
                 break;
             case "epidemia":
-                personal.addAll(List.of("médicos", "paramédicos", "promotores de salud"));
+                personal.put("médico", escala);  // aún puede mantenerse como tipo separado
+                personal.put("personal de salud", escala);
+                personal.put("promotor de salud", escala);
                 if (cantidadPersonas > 50) {
-                    personal.addAll(List.of("personal de bioseguridad", "psicólogo"));
+                    personal.put("psicólogo", 1);
+                    personal.put("personal de bioseguridad", 1);
+                    personal.put("veterinario", 1);
                 }
                 break;
             default:
-                personal.add("voluntarios comunitarios");
+                personal.put("voluntario comunitario", escala);
+                if (cantidadPersonas > 40) {
+                    personal.put("asistencia social", 1);
+                }
+                break;
         }
 
         return personal;
     }
+
 
 
 
