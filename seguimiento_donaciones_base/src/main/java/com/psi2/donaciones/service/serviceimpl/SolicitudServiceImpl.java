@@ -261,6 +261,63 @@ public class SolicitudServiceImpl implements SolicitudService {
         return resultado;
     }
 
+    @Override
+    public List<SolicitudConPersonalDto> getSolicitudesConPersonal() {
+        return solicitudRepository.findAll().stream()
+                .filter(s -> Boolean.TRUE.equals(s.getAprobada()))
+                .map(s -> new SolicitudConPersonalDto(
+                        s.getIdSolicitud(),
+                        s.getFechaInicioIncendio(),
+                        s.getFechaSolicitud(),
+                        s.getAprobada(),
+                        s.getCantidadPersonas(),
+                        s.getJustificacion(),
+                        s.getCategoria(),
+                        s.getListaProductos(),
+                        s.getSolicitante().getIdSolicitante(),
+                        s.getDestino().getIdDestino(),
+                        determinarPersonal(s.getCategoria(), s.getCantidadPersonas())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private List<String> determinarPersonal(String categoria, int cantidadPersonas) {
+        categoria = categoria.toLowerCase();
+        List<String> personal = new ArrayList<>();
+
+        switch (categoria) {
+            case "incendio":
+                personal.addAll(List.of("bomberos", "paramédicos", "policía"));
+                if (cantidadPersonas > 20) {
+                    personal.addAll(List.of("voluntarios", "psicólogo"));
+                }
+                break;
+            case "inundacion":
+                personal.addAll(List.of("rescatistas", "paramédicos", "voluntarios"));
+                if (cantidadPersonas > 30) {
+                    personal.addAll(List.of("apoyo logístico", "cocineros comunitarios"));
+                }
+                break;
+            case "escasez":
+                personal.addAll(List.of("voluntarios", "asistentes de alimentación", "promotores comunitarios"));
+                if (cantidadPersonas > 40) {
+                    personal.add("coordinador de ayuda alimentaria");
+                }
+                break;
+            case "epidemia":
+                personal.addAll(List.of("médicos", "paramédicos", "promotores de salud"));
+                if (cantidadPersonas > 50) {
+                    personal.addAll(List.of("personal de bioseguridad", "psicólogo"));
+                }
+                break;
+            default:
+                personal.add("voluntarios comunitarios");
+        }
+
+        return personal;
+    }
+
+
 
 
 

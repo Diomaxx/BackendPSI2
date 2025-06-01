@@ -1,5 +1,6 @@
 package com.psi2.donaciones.service;
 
+import com.psi2.donaciones.dto.SolicitudConPersonalDto;
 import com.psi2.donaciones.dto.SolicitudDonacionDto;
 import com.psi2.donaciones.dto.SolicitudDto;
 import com.psi2.donaciones.dto.SolicitudListaDto;
@@ -17,5 +18,6 @@ public interface SolicitudService {
     List<SolicitudListaDto> obtenerSolicitudesCompletas();
     List<SolicitudDto> getSolicitudesAprobadas();
     List<SolicitudDonacionDto> obtenerSolicitudesConDonacionesPendientes();
+    List<SolicitudConPersonalDto> getSolicitudesConPersonal();
 
 }

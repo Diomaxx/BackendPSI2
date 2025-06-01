@@ -1,5 +1,6 @@
 package com.psi2.donaciones.controller;
 
+import com.psi2.donaciones.dto.SolicitudConPersonalDto;
 import com.psi2.donaciones.dto.SolicitudDonacionDto;
 import com.psi2.donaciones.dto.SolicitudDto;
 import com.psi2.donaciones.dto.SolicitudListaDto;
@@ -28,6 +29,12 @@ public class SolicitudController {
     @GetMapping("/aprobadas/almacen")
     public ResponseEntity<List<SolicitudDonacionDto>> obtenerSolicitudesConDonacionesPendientes() {
         List<SolicitudDonacionDto> resultado = solicitudService.obtenerSolicitudesConDonacionesPendientes();
+        return ResponseEntity.ok(resultado);
+    }
+
+    @GetMapping("/apoyo")
+    public ResponseEntity<List<SolicitudConPersonalDto>> obtenerSolicitudesConPersonal() {
+        List<SolicitudConPersonalDto> resultado = solicitudService.getSolicitudesConPersonal();
         return ResponseEntity.ok(resultado);
     }
 
