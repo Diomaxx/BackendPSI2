@@ -288,40 +288,45 @@ public class SolicitudServiceImpl implements SolicitudService {
         Map<String, Integer> personal = new LinkedHashMap<>();
 
         long diasDiferencia = Math.max(1, (fechaSolicitud.getTime() - fechaInicio.getTime()) / (1000 * 60 * 60 * 24));
-        double factorUrgencia = diasDiferencia > 2 ? 1.5 : 1.0;
+        double factorUrgencia;
 
-        int escalaBase = (int) Math.ceil((cantidadPersonas / 15.0) * factorUrgencia);
-        int escalaVeterinario = (int) Math.ceil((cantidadPersonas / 30.0) * factorUrgencia);
-        int escalaMinima = Math.max(1, escalaBase);
-        int saludMinima = Math.max(2, (int) Math.ceil((cantidadPersonas / 10.0) * factorUrgencia));
+        if (diasDiferencia <= 1) {
+            factorUrgencia = 1.0;
+        } else if (diasDiferencia <= 3) {
+            factorUrgencia = 1.2;
+        } else if (diasDiferencia <= 7) {
+            factorUrgencia = 1.5;
+        } else {
+            factorUrgencia = 2.0;
+        }
 
         switch (categoria.toLowerCase()) {
             case "incendio":
-                personal.put("bombero", Math.max(1, escalaBase));
-                personal.put("personal de salud", saludMinima);
-                personal.put("policía", Math.max(1, escalaBase));
-                personal.put("veterinario", Math.max(1, escalaVeterinario));
+                personal.put("bombero", Math.max(1, (int) Math.ceil((cantidadPersonas / 8.0) * factorUrgencia)));
+                personal.put("personal de salud", Math.max(2, (int) Math.ceil((cantidadPersonas / 7.0) * factorUrgencia)));
+                personal.put("policía", Math.max(1, (int) Math.ceil((cantidadPersonas / 8.0) * factorUrgencia)));
+                personal.put("veterinario", Math.max(1, (int) Math.ceil((cantidadPersonas / 10.0) * factorUrgencia)));
                 if (cantidadPersonas > 30) {
-                    personal.put("psicólogo", 1);
-                    personal.put("voluntario", Math.max(1, escalaBase));
+                    personal.put("psicólogo", Math.max(1, (int) Math.ceil((cantidadPersonas / 30.0) * factorUrgencia)));
+                    personal.put("voluntario", Math.max(1, (int) Math.ceil((cantidadPersonas / 9.0) * factorUrgencia)));
                 }
                 break;
 
             case "inundacion":
-                personal.put("rescatista", Math.max(1, escalaBase));
-                personal.put("personal de salud", saludMinima);
-                personal.put("voluntario", Math.max(1, escalaBase));
-                personal.put("veterinario", Math.max(1, escalaVeterinario));
+                personal.put("rescatista", Math.max(1, (int) Math.ceil((cantidadPersonas / 8.0) * factorUrgencia)));
+                personal.put("personal de salud", Math.max(2, (int) Math.ceil((cantidadPersonas / 7.0) * factorUrgencia)));
+                personal.put("voluntario", Math.max(2, (int) Math.ceil((cantidadPersonas / 6.0) * factorUrgencia)));
+                personal.put("veterinario", Math.max(1, (int) Math.ceil((cantidadPersonas / 20.0) * factorUrgencia)));
                 if (cantidadPersonas > 30) {
-                    personal.put("cocinero comunitario", Math.max(1, escalaBase));
+                    personal.put("cocinero comunitario", Math.max(1, (int) Math.ceil((cantidadPersonas / 15.0) * factorUrgencia)));
                     personal.put("logística", 1);
                 }
                 break;
 
             case "escasez":
-                personal.put("voluntario", Math.max(1, escalaBase));
-                personal.put("nutricionista", Math.max(1, escalaBase));
-                personal.put("promotor comunitario", Math.max(1, escalaBase));
+                personal.put("voluntario", Math.max(2, (int) Math.ceil((cantidadPersonas / 10.0) * factorUrgencia)));
+                personal.put("nutricionista", Math.max(1, (int) Math.ceil((cantidadPersonas / 12.0) * factorUrgencia)));
+                personal.put("promotor comunitario", Math.max(1, (int) Math.ceil((cantidadPersonas / 12.0) * factorUrgencia)));
                 if (cantidadPersonas > 40) {
                     personal.put("coordinador de alimentos", 1);
                     personal.put("psicólogo", 1);
@@ -329,9 +334,9 @@ public class SolicitudServiceImpl implements SolicitudService {
                 break;
 
             case "epidemia":
-                personal.put("médico", Math.max(1, escalaBase));
-                personal.put("personal de salud", saludMinima);
-                personal.put("promotor de salud", Math.max(1, escalaBase));
+                personal.put("médico", Math.max(1, (int) Math.ceil((cantidadPersonas / 12.0) * factorUrgencia)));
+                personal.put("personal de salud", Math.max(2, (int) Math.ceil((cantidadPersonas / 8.0) * factorUrgencia)));
+                personal.put("promotor de salud", Math.max(1, (int) Math.ceil((cantidadPersonas / 10.0) * factorUrgencia)));
                 if (cantidadPersonas > 50) {
                     personal.put("psicólogo", 1);
                     personal.put("personal de bioseguridad", 1);
@@ -340,7 +345,7 @@ public class SolicitudServiceImpl implements SolicitudService {
                 break;
 
             default:
-                personal.put("voluntario comunitario", Math.max(1, escalaBase));
+                personal.put("voluntario comunitario", Math.max(2, (int) Math.ceil((cantidadPersonas / 7.0) * factorUrgencia)));
                 if (cantidadPersonas > 40) {
                     personal.put("asistencia social", 1);
                 }
@@ -349,6 +354,7 @@ public class SolicitudServiceImpl implements SolicitudService {
 
         return personal;
     }
+
 
 
 
