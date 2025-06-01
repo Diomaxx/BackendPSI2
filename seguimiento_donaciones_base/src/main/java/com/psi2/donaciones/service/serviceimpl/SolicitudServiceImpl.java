@@ -289,52 +289,58 @@ public class SolicitudServiceImpl implements SolicitudService {
 
         long diasDiferencia = Math.max(1, (fechaSolicitud.getTime() - fechaInicio.getTime()) / (1000 * 60 * 60 * 24));
         double factorUrgencia = diasDiferencia > 2 ? 1.5 : 1.0;
-        int escala = (int) Math.ceil((cantidadPersonas / 20.0) * factorUrgencia);
+
+        int escalaBase = (int) Math.ceil((cantidadPersonas / 15.0) * factorUrgencia);
+        int escalaVeterinario = (int) Math.ceil((cantidadPersonas / 30.0) * factorUrgencia);
+        int escalaMinima = Math.max(1, escalaBase);
+        int saludMinima = Math.max(2, (int) Math.ceil((cantidadPersonas / 10.0) * factorUrgencia));
 
         switch (categoria.toLowerCase()) {
             case "incendio":
-                personal.put("bombero", escala);
-                personal.put("personal de salud", escala);
-                personal.put("policía", escala);
-                personal.put("veterinario", (int) Math.ceil((cantidadPersonas / 40.0) * factorUrgencia));
+                personal.put("bombero", Math.max(1, escalaBase));
+                personal.put("personal de salud", saludMinima);
+                personal.put("policía", Math.max(1, escalaBase));
+                personal.put("veterinario", Math.max(1, escalaVeterinario));
                 if (cantidadPersonas > 30) {
                     personal.put("psicólogo", 1);
-                    personal.put("voluntario", escala);
+                    personal.put("voluntario", Math.max(1, escalaBase));
                 }
                 break;
 
             case "inundacion":
-                personal.put("rescatista", escala);
-                personal.put("personal de salud", escala);
-                personal.put("voluntario", escala);
-                personal.put("veterinario", (int) Math.ceil((cantidadPersonas / 40.0) * factorUrgencia));
+                personal.put("rescatista", Math.max(1, escalaBase));
+                personal.put("personal de salud", saludMinima);
+                personal.put("voluntario", Math.max(1, escalaBase));
+                personal.put("veterinario", Math.max(1, escalaVeterinario));
                 if (cantidadPersonas > 30) {
-                    personal.put("cocinero comunitario", escala);
+                    personal.put("cocinero comunitario", Math.max(1, escalaBase));
                     personal.put("logística", 1);
                 }
                 break;
 
             case "escasez":
-                personal.put("voluntario", escala);
-                personal.put("nutricionista", escala);
-                personal.put("promotor comunitario", escala);
+                personal.put("voluntario", Math.max(1, escalaBase));
+                personal.put("nutricionista", Math.max(1, escalaBase));
+                personal.put("promotor comunitario", Math.max(1, escalaBase));
                 if (cantidadPersonas > 40) {
                     personal.put("coordinador de alimentos", 1);
                     personal.put("psicólogo", 1);
                 }
                 break;
+
             case "epidemia":
-                personal.put("médico", escala);  // aún puede mantenerse como tipo separado
-                personal.put("personal de salud", escala);
-                personal.put("promotor de salud", escala);
+                personal.put("médico", Math.max(1, escalaBase));
+                personal.put("personal de salud", saludMinima);
+                personal.put("promotor de salud", Math.max(1, escalaBase));
                 if (cantidadPersonas > 50) {
                     personal.put("psicólogo", 1);
                     personal.put("personal de bioseguridad", 1);
                     personal.put("veterinario", 1);
                 }
                 break;
+
             default:
-                personal.put("voluntario comunitario", escala);
+                personal.put("voluntario comunitario", Math.max(1, escalaBase));
                 if (cantidadPersonas > 40) {
                     personal.put("asistencia social", 1);
                 }
@@ -343,6 +349,7 @@ public class SolicitudServiceImpl implements SolicitudService {
 
         return personal;
     }
+
 
 
 
