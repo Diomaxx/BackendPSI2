@@ -373,7 +373,7 @@ public class DonacionServiceImpl implements DonacionService {
         }
 
         // URL pública (ajusta con tu IP o dominio real)
-        return "https://34.123.227.162/imagenesDonacion/" + fileName;
+        return "https://dasalas.shop/imagenesDonacion/" + fileName;
     }
 
 
