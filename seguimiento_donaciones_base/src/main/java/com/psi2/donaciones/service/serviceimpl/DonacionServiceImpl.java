@@ -348,7 +348,6 @@ public class DonacionServiceImpl implements DonacionService {
     }
 
     private String procesarImagen(String imagenBase64) throws IOException {
-        // Quitar prefijo "data:image/jpeg;base64," si existe
         String base64Image = imagenBase64.contains(",")
                 ? imagenBase64.split(",")[1]
                 : imagenBase64;

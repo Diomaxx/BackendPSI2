@@ -55,10 +55,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setActive(true);
         usuario.setAdmin(false);
 
-        enviarRegistroAGlobal(
-                usuarioDto.getNombre(),
-                usuarioDto.getApellido(),
-                usuarioDto.getCorreoElectronico(),
+        enviarRegistroAGlobal(usuarioDto.getNombre(), usuarioDto.getApellido(), usuarioDto.getCorreoElectronico(),
                 usuarioDto.getCi(),
                 usuarioDto.getTelefono()
         );
@@ -67,14 +64,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario saved = usuarioRepository.save(usuario);
 
         return new UsuarioDto(
-                saved.getIdUsuario(),
-                saved.getNombre(),
-                saved.getApellido(),
-                saved.getTelefono(),
-                saved.getCorreoElectronico(),
-                saved.getCi(),
-                null,
-                saved.getAdmin(),
+                saved.getIdUsuario(), saved.getNombre(), saved.getApellido(), saved.getTelefono(),
+                saved.getCorreoElectronico(), saved.getCi(), null, saved.getAdmin(),
                 saved.getActive()
         );
     }
@@ -176,15 +167,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         Usuario saved = usuarioRepository.save(usuario);
 
-        return new UsuarioDto(
-                saved.getIdUsuario(),
-                saved.getNombre(),
-                saved.getApellido(),
-                saved.getTelefono(),
-                saved.getCorreoElectronico(),
-                saved.getCi(),
-                null,
-                saved.getAdmin(),
+        return new UsuarioDto(saved.getIdUsuario(), saved.getNombre(), saved.getApellido(), saved.getTelefono(),
+                saved.getCorreoElectronico(), saved.getCi(), null, saved.getAdmin(),
                 saved.getActive()
         );
     }

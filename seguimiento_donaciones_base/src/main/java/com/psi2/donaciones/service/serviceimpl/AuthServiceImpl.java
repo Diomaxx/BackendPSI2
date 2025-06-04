@@ -46,21 +46,10 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         String token = jwtUtil.generateToken(userDetails);
-        long expiration = jwtUtil.getExpirationDate().getTime(); // Convertir a timestamp
+        long expiration = jwtUtil.getExpirationDate().getTime();
 
         return new AuthResponse(token, expiration);
     }
 
-    @Override
-    public void register(AuthRequest request) {
-        if (usuarioRepository.existsByCi(request.getCedulaIdentidad())) {
-            throw new RuntimeException("El CI ya está registrado");
-        }
 
-        Usuario usuario = new Usuario();
-        usuario.setCi(request.getCedulaIdentidad());
-        usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
-
-        usuarioRepository.save(usuario);
-    }
 }

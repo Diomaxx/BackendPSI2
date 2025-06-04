@@ -44,23 +44,7 @@ public class SeguimientoDonacionServiceImpl implements SeguimientoDonacionServic
         return seguimientoDonaciones.stream().map(SeguimientoDonacionMapper::toDto)
                 .collect(Collectors.toList());
     }
-    /*
-    @Override
-    @Transactional
-    public SeguimientoDonacionDto actualizarEstadoSeguimiento(Integer donacionId, String nuevoEstado, String imagen) {
-        Donacion donacion = donacionRepository.findById(donacionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Donación no encontrada con ID: " + donacionId));
 
-        SeguimientoDonacion seguimiento = seguimientoRepository.findByIdDonacion(donacionId)
-                .orElseGet(() -> new SeguimientoDonacion(donacionId));
-
-        seguimiento.setEstado(nuevoEstado);
-        seguimiento.setFechaActualizacion(new Date());
-        seguimiento.setIdDonacion(donacionId);
-        seguimiento.setImagenEvidencia(imagen);
-
-        return SeguimientoDonacionMapper.toDto(seguimientoRepository.save(seguimiento));
-    }*/
 
     @Override
     public SeguimientoDonacionDto buscarPorIdDonacion(Integer idDonacion) {
@@ -71,16 +55,14 @@ public class SeguimientoDonacionServiceImpl implements SeguimientoDonacionServic
         return seguimientos.stream()
                 .filter(s -> s.getIdDonacion() != null && s.getIdDonacion().equals(idDonacionStr))
                 .findFirst()
-                .map(SeguimientoDonacionMapper::toDto) // convertir solo si se encuentra
-                .orElse(null); // <- evita lanzar excepción
+                .map(SeguimientoDonacionMapper::toDto)
+                .orElse(null);
     }
 
     public List<SeguimientoCompletoDto> obtenerTodosSeguimientosConHistorial() {
 
-        // Traer todos los seguimientos (Mongo)
         List<SeguimientoDonacion> seguimientos = seguimientoRepository.findAll();
 
-        // Traer todos los historiales (SQL)
         List<HistorialSeguimientoDonaciones> todosLosHistoriales = historialSeguimientoDonacionesRepository.findAll();
 
         List<SeguimientoCompletoDto> resultado = new ArrayList<>();
@@ -129,48 +111,6 @@ public class SeguimientoDonacionServiceImpl implements SeguimientoDonacionServic
         return resultado;
     }
 
-    /*
-    @Override
-    public SeguimientoDonacionDto crearSeguimientoInicial(String donacionId, String estado) {
-        SeguimientoDonacion seguimiento = new SeguimientoDonacion();
-        seguimiento.setIdDonacion(donacionId);
-        seguimiento.setEstado(estado);
-        seguimiento.setFechaActualizacion(new Date());
-
-        seguimiento = seguimientoRepository.save(seguimiento);
-        return SeguimientoDonacionMapper.toDto(seguimiento);
-    }
-
-    @Override
-    public List<SeguimientoCompletoDto> getAllSeguimientosCompletos() {
-        List<SeguimientoDonacion> seguimientos = seguimientoRepository.findAll();
-        List<SeguimientoCompletoDto> resultado = new ArrayList<>();
-
-        for (SeguimientoDonacion seguimiento : seguimientos) {
-            Optional<Donacion> donacionOpt = donacionRepository.findById(seguimiento.getIdDonacion());
-            if (donacionOpt.isEmpty()) continue;
-
-            Donacion donacion = donacionOpt.get();
-            Optional<Solicitud> solicitudOpt = solicitudRepository.findById(donacion.getIdSolicitud());
-            if (solicitudOpt.isEmpty()) continue;
-
-            Solicitud solicitud = solicitudOpt.get();
-
-            SeguimientoCompletoDto dto = new SeguimientoCompletoDto();
-            dto.setIdDonacion(donacion.getIdDonacion());
-            dto.setNombreDonacion(donacion.getNombre());
-            dto.setEncargado(donacion.getCiUsuario());
-            dto.setEstado(seguimiento.getEstado());
-            dto.setFechaActualizacion(seguimiento.getFechaActualizacion());
-            dto.setOrigen(solicitud.getComunidad());
-            dto.setDestino(solicitud.getDireccion());
-            dto.setImagenEvidencia(seguimiento.getImagenEvidencia());
-
-            resultado.add(dto);
-        }
-
-        return resultado;
-    }*/
 
     @Override
     public void deleteSeguimientoByDonacionId(Integer donacionId) {
