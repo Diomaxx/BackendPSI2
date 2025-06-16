@@ -38,6 +38,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         return http
+                .cors()
+                .and()
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**","/api/metricas", "/api/donaciones/donantes", "/api/usuarios/**", "/api/solicitudes-sin-responder/crear-completa","/api/solicitudes/apoyo","/images/**","/ws/**","/proxy/**").permitAll()
