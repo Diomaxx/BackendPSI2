@@ -79,14 +79,13 @@ public class SolicitudServiceImpl implements SolicitudService {
                 String[] productos = solicitud.getListaProductos().split(",");
 
                 for (String producto : productos) {
-                    // Limpiar el sufijo ":número"
+
                     String nombreProducto = producto.replaceAll(":\\d+", "").trim();
                     conteoProductos.merge(nombreProducto, 1, Integer::sum);
                 }
             }
         });
 
-        // Ordenar y obtener top 5
         List<Map.Entry<String, Integer>> sortedEntries = new ArrayList<>(conteoProductos.entrySet());
         sortedEntries.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
 
@@ -144,35 +143,21 @@ public class SolicitudServiceImpl implements SolicitudService {
             Destino destino = destinoRepository.findById(s.getDestino().getIdDestino()).orElse(null);
 
             SolicitanteDto solicitanteDto = solicitante != null ? new SolicitanteDto(
-                    solicitante.getIdSolicitante(),
-                    solicitante.getNombre(),
-                    solicitante.getApellido(),
-                    solicitante.getTelefono(),
+                    solicitante.getIdSolicitante(), solicitante.getNombre(),
+                    solicitante.getApellido(), solicitante.getTelefono(),
                     solicitante.getCi()
             ) : null;
 
-            DestinoDto destinoDto = destino != null ? new DestinoDto(
-                    destino.getIdDestino(),
-                    destino.getDireccion(),
-                    destino.getProvincia(),
-                    destino.getComunidad(),
-                    destino.getLatitud(),
+            DestinoDto destinoDto = destino != null ? new DestinoDto(destino.getIdDestino(), destino.getDireccion(),
+                    destino.getProvincia(), destino.getComunidad(), destino.getLatitud(),
                     destino.getLongitud()
             ) : null;
 
-            String estado = (s.getAprobada() == null || !s.getAprobada()) ? "Sin responder" : "Aprobado";
-
-            resultado.add(new SolicitudListaDto(
-                    String.valueOf(s.getIdSolicitud()),
-                    s.getFechaInicioIncendio(),
-                    s.getFechaSolicitud(),
-                    s.getAprobada(),
-                    s.getCantidadPersonas(),
-                    s.getJustificacion(),
-                    s.getCategoria(),
-                    s.getListaProductos(),
-                    solicitanteDto,
-                    destinoDto
+            resultado.add(new SolicitudListaDto(String.valueOf(s.getIdSolicitud()), s.getFechaInicioIncendio(),
+                    s.getFechaSolicitud(), s.getAprobada(),
+                    s.getCantidadPersonas(), s.getJustificacion(),
+                    s.getCategoria(), s.getListaProductos(),
+                    solicitanteDto, destinoDto
             ));
         }
 
@@ -184,23 +169,15 @@ public class SolicitudServiceImpl implements SolicitudService {
             Destino destino = destinoRepository.findById(Integer.parseInt(s.getIdDestino())).orElse(null);
 
             SolicitanteDto solicitanteDto = solicitante != null ? new SolicitanteDto(
-                    solicitante.getIdSolicitante(),
-                    solicitante.getNombre(),
-                    solicitante.getApellido(),
-                    solicitante.getTelefono(),
+                    solicitante.getIdSolicitante(), solicitante.getNombre(), solicitante.getApellido(), solicitante.getTelefono(),
                     solicitante.getCi()
             ) : null;
 
             DestinoDto destinoDto = destino != null ? new DestinoDto(
-                    destino.getIdDestino(),
-                    destino.getDireccion(),
-                    destino.getProvincia(),
-                    destino.getComunidad(),
-                    destino.getLatitud(),
-                    destino.getLongitud()
+                    destino.getIdDestino(), destino.getDireccion(), destino.getProvincia(), destino.getComunidad(),
+                    destino.getLatitud(), destino.getLongitud()
             ) : null;
 
-            // Procesar productos List<String> a "Nombre:Cantidad,Nombre2:Cantidad2"
             String productosString = s.getListaProductos().stream().map(prod -> {
                 String[] partes = prod.split(":");
                 String idProducto = partes[0];

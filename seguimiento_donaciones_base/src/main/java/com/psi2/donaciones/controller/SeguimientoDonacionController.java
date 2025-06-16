@@ -37,13 +37,6 @@ public class SeguimientoDonacionController {
     }
 
 
-    /*
-    @GetMapping("/completos")
-    public ResponseEntity<List<SeguimientoCompletoDto>> obtenerSeguimientosCompletos() {
-        List<SeguimientoCompletoDto> lista = seguimientoDonacionService.getAllSeguimientosCompletos();
-        return ResponseEntity.ok(lista);
-    }*/
-
 
     @GetMapping("/por-donacion/{idDonacion}")
     public ResponseEntity<SeguimientoDonacionDto> getSeguimientoPorDonacion(
@@ -51,30 +44,5 @@ public class SeguimientoDonacionController {
         return ResponseEntity.ok(seguimientoDonacionService.buscarPorIdDonacion(idDonacion));
     }
 
-    /*
-    @PutMapping("/{donacionId}/actualizar-estado")
-    public ResponseEntity<?> actualizarEstadoSeguimiento(
-            @PathVariable String donacionId,
-            @RequestBody Map<String, String> requestBody) {
-        try {
-            String estado = requestBody.get("estado");
-            String imagen = requestBody.get("imagen");
-            if (estado == null || estado.isBlank()) {
-                return ResponseEntity.badRequest().body("El estado es obligatorio.");
-            }
-
-            SeguimientoDonacionDto dto = seguimientoDonacionService.actualizarEstadoSeguimiento(donacionId, estado,imagen);
-            return ResponseEntity.ok(dto);
-
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ex.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al actualizar el seguimiento: " + ex.getMessage());
-        }
-    }
-
-     */
 
 }

@@ -77,7 +77,6 @@ public class DonacionController {
             messagingTemplate.convertAndSend("/topic/donacion-actualizada", actualizada);
             return ResponseEntity.ok(actualizada);
         } catch (IllegalArgumentException e) {
-            // Devuelve 400 Bad Request con mensaje personalizado
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }

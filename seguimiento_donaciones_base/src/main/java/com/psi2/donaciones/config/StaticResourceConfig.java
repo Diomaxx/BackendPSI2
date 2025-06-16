@@ -9,8 +9,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Configurar para que Spring Boot sirva imágenes desde el directorio externo
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:/C:/temp/imagenesDonacion/");  // Ruta absoluta del directorio externo
+                .addResourceLocations("file:/C:/temp/imagenesDonacion/");
     }
 }

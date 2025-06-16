@@ -51,7 +51,6 @@ public class HistorialSeguimientoDonacionesServiceImpl implements HistorialSegui
         ubicacion.setLongitud(longitud);
         Ubicacion ubicacionGuardada = ubicacionRepository.save(ubicacion);
 
-        // Crear historial
         HistorialSeguimientoDonaciones historial = new HistorialSeguimientoDonaciones();
         historial.setDonacion(donacion);
         historial.setCiUsuario(ciUsuario);

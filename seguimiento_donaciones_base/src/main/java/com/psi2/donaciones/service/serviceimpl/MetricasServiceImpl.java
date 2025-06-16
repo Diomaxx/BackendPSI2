@@ -46,14 +46,7 @@ public class MetricasServiceImpl implements MetricasService {
 
 
 
-    @Override
-    public MetricasDto addResumenGeneral(MetricasDto metricasDto) {
-        long totalDonaciones = donacionService.contarTotalDonaciones();
-        metricasDto.setSolicitudesAprobadas((int) totalDonaciones);
-        Metricas metrica = MetricasMapper.toEntity(metricasDto);
-        Metricas nuevaMetrica = metricasRepository.save(metrica);
-        return MetricasMapper.toDto(nuevaMetrica);
-    }
+
 
     @Override
     public MetricasDto obtenerMetricas() {

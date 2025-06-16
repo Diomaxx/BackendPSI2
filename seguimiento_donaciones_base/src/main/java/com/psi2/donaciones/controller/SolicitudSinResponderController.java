@@ -21,7 +21,6 @@ public class SolicitudSinResponderController {
     private SolicitudSinResponderService solicitudSinResponderService;
 
 
-
     @GetMapping
     public ResponseEntity<List<SolicitudSinResponderDto>> obtenerTodas() {
         List<SolicitudSinResponderDto> solicitudes = solicitudSinResponderService.obtenerTodasSolicitudes();

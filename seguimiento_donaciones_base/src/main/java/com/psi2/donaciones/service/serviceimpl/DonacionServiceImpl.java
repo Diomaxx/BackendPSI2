@@ -76,7 +76,6 @@ public class DonacionServiceImpl implements DonacionService {
             dto.setEncargado(d.getEncargado());
             dto.setSolicitud(d.getSolicitud());
 
-            // Obtener el estado desde la tabla SeguimientoDonaciones
             SeguimientoDonacionDto seguimiento = seguimientoDonacionService.buscarPorIdDonacion(d.getIdDonacion());
             if (seguimiento != null) {
                 dto.setEstado(seguimiento.getEstado());
@@ -352,26 +351,21 @@ public class DonacionServiceImpl implements DonacionService {
                 ? imagenBase64.split(",")[1]
                 : imagenBase64;
 
-        // Decodificar imagen
         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
-        // Ruta real en el sistema Ubuntu
         String rutaSistema = "/var/www/html/imagenesDonacion/";
         String fileName = "imagen_" + System.currentTimeMillis() + ".jpg";
         String filePath = rutaSistema + fileName;
 
-        // Crear carpeta si no existe
         File dir = new File(rutaSistema);
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
-        // Escribir archivo
         try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
             fileOutputStream.write(imageBytes);
         }
 
-        // URL pública (ajusta con tu IP o dominio real)
         return "https://dasalas.shop/imagenesDonacion/" + fileName;
     }
 
@@ -410,7 +404,7 @@ public class DonacionServiceImpl implements DonacionService {
         return prefijoNombre + numeroFormateado;
     }
 
-
+    //
     @Override
     public double calcularTiempoPromedioEntrega() {
         List<Donacion> donaciones = donacionRepository.findAll();
@@ -457,10 +451,10 @@ public class DonacionServiceImpl implements DonacionService {
             }
 
             AgradecimientoDto combinado = new AgradecimientoDto();
-            combinado.setIdDonacion(donacion.getIdDonacion());
-            combinado.setCodigo(donacion.getCodigo());
-            combinado.setImagen(donacion.getImagen());
-            combinado.setFechaEntrega(donacion.getFechaEntrega());
+            combinado.setIdDonacion(dto.getIdDonacion());
+            combinado.setCodigo(dto.getCodigo());
+            combinado.setImagen(dto.getImagen());
+            combinado.setFechaEntrega(dto.getFechaEntrega());
             combinado.setDonantes(donantes);
             return combinado;
         }).collect(Collectors.toList());

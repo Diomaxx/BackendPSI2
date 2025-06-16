@@ -53,29 +53,7 @@ public class InventarioExternoServiceImpl implements InventarioExternoService {
         return response.getBody();
     }
 
-    @Override
-    public boolean descontarProductos(Map<String, Integer> productos) {
-        try {
-            for (Map.Entry<String, Integer> entry : productos.entrySet()) {
-                String idProducto = entry.getKey();
-                Integer cantidad = entry.getValue();
 
-                Map<String, Integer> requestBody = Map.of("cantidad_a_restar", cantidad);
-
-                // CAMBIO -> HttpMethod.POST
-                restTemplate.exchange(
-                        inventarioApiUrl + "/inventario/" + idProducto + "/disminuir",
-                        HttpMethod.POST,
-                        new HttpEntity<>(requestBody),
-                        Void.class
-                );
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
     public void verificarStockBajo() {
         List<ProductoDto> productos = this.consultarInventario();
 

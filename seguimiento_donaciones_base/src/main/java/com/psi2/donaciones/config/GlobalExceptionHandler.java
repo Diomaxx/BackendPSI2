@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
         body.put("error", "Unauthorized");
         body.put("message", ex.getMessage());
 
-        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED); // 401
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

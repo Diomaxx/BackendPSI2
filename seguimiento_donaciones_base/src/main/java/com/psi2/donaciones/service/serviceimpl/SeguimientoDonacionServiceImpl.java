@@ -62,9 +62,7 @@ public class SeguimientoDonacionServiceImpl implements SeguimientoDonacionServic
     public List<SeguimientoCompletoDto> obtenerTodosSeguimientosConHistorial() {
 
         List<SeguimientoDonacion> seguimientos = seguimientoRepository.findAll();
-
         List<HistorialSeguimientoDonaciones> todosLosHistoriales = historialSeguimientoDonacionesRepository.findAll();
-
         List<SeguimientoCompletoDto> resultado = new ArrayList<>();
 
         for (SeguimientoDonacion seguimiento : seguimientos) {
@@ -74,21 +72,14 @@ public class SeguimientoDonacionServiceImpl implements SeguimientoDonacionServic
             Donacion donacion = donacionOp.get();
             System.out.println(donacion);
 
-            // Filtrar historiales que corresponden a este seguimiento (por idDonacion)
             List<HistorialSeguimientoDonaciones> historialFiltrado = todosLosHistoriales.stream()
                     .filter(h -> h.getDonacion().getIdDonacion().equals(Integer.valueOf(seguimiento.getIdDonacion())))
-                    .sorted(Comparator.comparing(HistorialSeguimientoDonaciones::getFechaActualizacion))
-                    .collect(Collectors.toList());
+                    .sorted(Comparator.comparing(HistorialSeguimientoDonaciones::getFechaActualizacion)).collect(Collectors.toList());
 
-            // Mapear historial a DTO
             List<SeguimientoCompletoDto.PuntoHistorialDto> puntosHistorial = historialFiltrado.stream()
-                    .map(h -> new SeguimientoCompletoDto.PuntoHistorialDto(
-                            h.getUbicacion().getLatitud(),
-                            h.getUbicacion().getLongitud()
-                    ))
+                    .map(h -> new SeguimientoCompletoDto.PuntoHistorialDto(h.getUbicacion().getLatitud(), h.getUbicacion().getLongitud()))
                     .collect(Collectors.toList());
 
-            // Armar DTO de seguimiento actual
             SeguimientoCompletoDto dto = new SeguimientoCompletoDto();
             dto.setIdDonacion(seguimiento.getIdDonacion());
             dto.setCiUsuario(donacion.getEncargado().getCi());

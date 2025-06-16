@@ -63,15 +63,12 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
     
     @Override
     public SolicitudSinResponderDto crearSolicitud(SolicitudSinResponderDto solicitudDto) {
-        // Verificar la disponibilidad de los productos antes de crear la solicitud
         if (!verificarDisponibilidad(solicitudDto.getListaProductos())) {
             throw new RuntimeException("No hay suficiente stock disponible para algunos de los productos solicitados");
         }
         
-        // Establecer fecha de solicitud
         solicitudDto.setFechaSolicitud(new java.util.Date());
         
-        // Convertir a entidad y guardar
         SolicitudesSinResponder solicitud = SolicitudSinResponderMapper.toEntity(solicitudDto);
         SolicitudesSinResponder guardada = solicitudesSinResponderRepository.save(solicitud);
         
@@ -167,7 +164,7 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
 
     @Override
     public boolean aprobarSolicitud(String idSolicitud, String ciEncargado) {
-        // Buscar la solicitud sin responder
+
         Optional<SolicitudesSinResponder> optSolicitud = solicitudesSinResponderRepository.findById(idSolicitud);
         if (optSolicitud.isEmpty()) {
             return false;
@@ -176,7 +173,6 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
         SolicitudesSinResponder solicitudSinResponder = optSolicitud.get();
 
         try {
-            // Buscar solicitante
             Integer idsolicitante= Integer.parseInt(solicitudSinResponder.getIdSolicitante());
             Optional<Solicitante> optSolicitante = solicitanteRepository.findById(idsolicitante);
             if (optSolicitante.isEmpty()) {
@@ -184,7 +180,6 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
             }
             Solicitante solicitante = optSolicitante.get();
 
-            // Buscar destino
             Integer idDestino = Integer.parseInt(solicitudSinResponder.getIdDestino());
             Optional<Destino> optDestino = destinoRepository.findById(idDestino);
             if (optDestino.isEmpty()) {
@@ -192,7 +187,6 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
             }
             Destino destino = optDestino.get();
 
-            // Crear solicitud
             Solicitud solicitud = new Solicitud();
             solicitud.setFechaInicioIncendio(new java.sql.Date(solicitudSinResponder.getFechaInicioIncendio().getTime()));
             solicitud.setFechaSolicitud(new java.sql.Date(solicitudSinResponder.getFechaSolicitud().getTime()));
@@ -224,19 +218,11 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
 
             solicitudRepository.save(solicitud);
 
-            Map<String, Integer> productosDescontar = obtenerProductosDeSolicitud(solicitudSinResponder);
-            //boolean descontado = inventarioExternoService.descontarProductos(productosDescontar);
             inventarioExternoService.verificarStockBajo();
-
-            /*if (!descontado) {
-                throw new RuntimeException("No se pudo descontar del inventario");
-            }*/
             
             donacionService.crearDonacionDesdeSolicitud(solicitud.getIdSolicitud(),ciEncargado);
             
             solicitudesSinResponderRepository.deleteById(idSolicitud);
-
-
 
 
             return true;
@@ -255,7 +241,6 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
         SolicitudesSinResponder solicitudSinResponder = optSolicitud.get();
 
         try {
-            // Buscar solicitante
             Integer idsolicitante= Integer.parseInt(solicitudSinResponder.getIdSolicitante());
             Optional<Solicitante> optSolicitante = solicitanteRepository.findById(idsolicitante);
             if (optSolicitante.isEmpty()) {
@@ -263,7 +248,6 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
             }
             Solicitante solicitante = optSolicitante.get();
 
-            // Buscar destino
             Integer idDestino = Integer.parseInt(solicitudSinResponder.getIdDestino());
             Optional<Destino> optDestino = destinoRepository.findById(idDestino);
             if (optDestino.isEmpty()) {
@@ -271,7 +255,6 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
             }
             Destino destino = optDestino.get();
 
-            // Crear solicitud
             Solicitud solicitud = new Solicitud();
             solicitud.setFechaInicioIncendio(new java.sql.Date(solicitudSinResponder.getFechaInicioIncendio().getTime()));
             solicitud.setFechaSolicitud(new java.sql.Date(solicitudSinResponder.getFechaSolicitud().getTime()));
@@ -280,7 +263,6 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
             solicitud.setCategoria(solicitudSinResponder.getCategoria());
             solicitud.setJustificacion(justificacion);
 
-            // Guardar lista de productos como String
             List<String> listaProductosFormateada = solicitudSinResponder.getListaProductos().stream()
                     .map(item -> {
                         String[] partes = item.split(":");
@@ -299,14 +281,11 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
 
             solicitud.setListaProductos(String.join(",", listaProductosFormateada));
 
-            // Asignar solicitante y destino encontrados
             solicitud.setSolicitante(solicitante);
             solicitud.setDestino(destino);
 
-            // Guardar solicitud
             solicitudRepository.save(solicitud);
 
-            // Eliminar de Mongo
             solicitudesSinResponderRepository.deleteById(idSolicitud);
 
             return true;
@@ -318,10 +297,8 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
     
     @Override
     public boolean verificarDisponibilidad(List<String> listaProductos) {
-        // Obtener la disponibilidad actual (considerando reservas)
         Map<String, Integer> disponibilidadActual = calcularDisponibilidadActual();
         
-        // Convertir lista de productos a mapa
         Map<String, Integer> productosRequeridos = new HashMap<>();
         
         for (String item : listaProductos) {
@@ -331,22 +308,19 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
                 try {
                     int cantidad = Integer.parseInt(partes[1]);
                     
-                    // Sumar si ya existe una entrada para este producto
                     int cantidadActual = productosRequeridos.getOrDefault(idProducto, 0);
                     productosRequeridos.put(idProducto, cantidadActual + cantidad);
                 } catch (NumberFormatException e) {
-                    // Ignorar formato incorrecto
+                    // Ignora formato correcto
                 }
             }
         }
         
-        // Verificar disponibilidad
         for (Map.Entry<String, Integer> entry : productosRequeridos.entrySet()) {
             String idProducto = entry.getKey();
             int cantidadRequerida = entry.getValue();
             
-            // Si no existe el producto o no hay suficiente cantidad disponible
-            if (!disponibilidadActual.containsKey(idProducto) || 
+            if (!disponibilidadActual.containsKey(idProducto) ||
                 disponibilidadActual.get(idProducto) < cantidadRequerida) {
                 return false;
             }
@@ -359,31 +333,7 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
     public Map<String, Integer> obtenerInventarioDisponible() {
         return calcularDisponibilidadActual();
     }
-    
-    // Método privado para calcular todas las reservas de productos
-    private Map<String, Integer> calcularReservas() {
-        Map<String, Integer> reservas = new HashMap<>();
-        
-        // Obtener todas las solicitudes sin responder
-        List<SolicitudesSinResponder> solicitudes = solicitudesSinResponderRepository.findAll();
-        
-        // Procesar cada solicitud para sumar reservas
-        for (SolicitudesSinResponder solicitud : solicitudes) {
-            Map<String, Integer> productosSolicitud = obtenerProductosDeSolicitud(solicitud);
-            
-            // Sumar los productos de esta solicitud a las reservas
-            for (Map.Entry<String, Integer> entry : productosSolicitud.entrySet()) {
-                String idProducto = entry.getKey();
-                int cantidad = entry.getValue();
-                
-                // Sumar a las reservas existentes
-                int reservaActual = reservas.getOrDefault(idProducto, 0);
-                reservas.put(idProducto, reservaActual + cantidad);
-            }
-        }
-        
-        return reservas;
-    }
+
     
     private Map<String, Integer> calcularDisponibilidadActual() {
         Map<String, Integer> inventarioActual = new HashMap<>();
@@ -406,6 +356,26 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
         }
         
         return disponibilidadReal;
+    }
+
+    private Map<String, Integer> calcularReservas() {
+        Map<String, Integer> reservas = new HashMap<>();
+
+        List<SolicitudesSinResponder> solicitudes = solicitudesSinResponderRepository.findAll();
+
+        for (SolicitudesSinResponder solicitud : solicitudes) {
+            Map<String, Integer> productosSolicitud = obtenerProductosDeSolicitud(solicitud);
+
+            for (Map.Entry<String, Integer> entry : productosSolicitud.entrySet()) {
+                String idProducto = entry.getKey();
+                int cantidad = entry.getValue();
+
+                int reservaActual = reservas.getOrDefault(idProducto, 0);
+                reservas.put(idProducto, reservaActual + cantidad);
+            }
+        }
+
+        return reservas;
     }
     
     private Map<String, Integer> obtenerProductosDeSolicitud(SolicitudesSinResponder solicitud) {

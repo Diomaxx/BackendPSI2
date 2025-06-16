@@ -13,14 +13,6 @@ public class ClearNotifications {
     @Autowired
     private NotificacionesRepository notificacionRepository;
 
-    /*@Scheduled(fixedRate = 10000) // cada 10 segundos
-    public void borrarNotificacionesViejas() {
-        Instant hace1Minuto = Instant.now().minusSeconds(60);
-        Date fechaLimite = Date.from(hace1Minuto);
-
-        long eliminadas = notificacionRepository.deleteByFechaCreacionBefore(fechaLimite);
-        System.out.println("Borradas: " + eliminadas);
-    }*/
 
     @Scheduled(cron = "0 0 3 * * *")
     public void borrarNotificacionesViejas() {

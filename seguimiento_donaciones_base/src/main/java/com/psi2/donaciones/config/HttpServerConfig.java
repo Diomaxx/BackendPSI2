@@ -16,7 +16,7 @@ public class HttpServerConfig {
 
     private Connector createHttpConnector() {
         Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
-        connector.setPort(8080); // Puerto HTTP adicional
+        connector.setPort(8080);
         return connector;
     }
 }

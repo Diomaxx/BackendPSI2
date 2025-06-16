@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class AuthResponse {
     private String token;
-    private long expiration; // Timestamp en milisegundos
+    private long expiration;
 
 }

@@ -13,7 +13,7 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET_KEY = "clave123456789012345678901234567890"; // Mínimo 32 caracteres
+    private static final String SECRET_KEY = "clave123456789012345678901234567890";
     private static final long EXPIRATION_TIME = 1000 * 3600;
 
     private Key getSigningKey() {
