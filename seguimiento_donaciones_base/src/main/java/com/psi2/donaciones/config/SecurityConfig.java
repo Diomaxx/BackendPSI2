@@ -40,7 +40,7 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**","/api/metricas", "/api/donaciones/donantes", "/api/usuarios/**", "/api/solicitudes-sin-responder/crear-completa","/images/**","/ws/**","/proxy/**").permitAll()
+                        .requestMatchers("/auth/**","/api/metricas", "/api/donaciones/donantes", "/api/usuarios/**", "/api/solicitudes-sin-responder/crear-completa","/api/solicitudes/apoyo","/images/**","/ws/**","/proxy/**").permitAll()
 
                         .anyRequest().authenticated()
                 )

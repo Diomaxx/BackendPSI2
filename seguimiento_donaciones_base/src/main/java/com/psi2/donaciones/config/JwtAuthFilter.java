@@ -20,7 +20,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     public JwtAuthFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
-        System.out.println("JwtAuthFilter CONSTRUCTOR INVOCADO");
 
     }
 
@@ -29,8 +28,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-
-        System.out.println("JWT FILTER ACTIVO para: " + request.getRequestURI());
 
         String authHeader = request.getHeader("Authorization");
 
