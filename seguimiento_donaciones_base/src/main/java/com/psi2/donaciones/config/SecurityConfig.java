@@ -26,13 +26,21 @@ public class SecurityConfig {
     public JwtAuthFilter jwtAuthFilter(@Lazy UsuarioService usuarioService) {
         return new JwtAuthFilter(jwtUtil, usuarioService);
     }
+    /*
+    /api/metricas
+    /api/donaciones/donantes
+    /api/usuario/**
+    /api/solicitudes-sin-responder/crear-completa
 
+
+
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**","/api/**","/images/**","/ws/**","/proxy/**").permitAll()
+                        .requestMatchers("/auth/**","/api/metricas", "/api/donaciones/donantes", "/api/usuarios/**", "/api/solicitudes-sin-responder/crear-completa","/images/**","/ws/**","/proxy/**").permitAll()
 
                         .anyRequest().authenticated()
                 )

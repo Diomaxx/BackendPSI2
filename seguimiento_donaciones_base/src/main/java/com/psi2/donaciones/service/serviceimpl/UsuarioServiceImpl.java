@@ -123,7 +123,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         for (Usuario usuario : usuarios) {
             if (usuario.getCi().equals(ci)) {
                 usuario.setContrasena(passwordEncoder.encode(nuevaContrasena));
-                usuario.setActive(true);//
+                usuario.setActive(true);
                 usuarioRepository.save(usuario);
 
                 UsuarioDto dto = usuarioMapper.toDto(usuario);
