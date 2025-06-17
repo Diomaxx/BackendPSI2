@@ -1,6 +1,7 @@
 package com.psi2.donaciones.service;
 
 import com.psi2.donaciones.dto.AgradecimientoDto;
+import com.psi2.donaciones.dto.DestinoDto;
 import com.psi2.donaciones.dto.DonacionDto;
 import com.psi2.donaciones.dto.NewDonacionDto;
 
@@ -15,5 +16,6 @@ public interface DonacionService {
     void crearDonacionDesdeSolicitud(Integer idSolicitud, String ciEncargado);
     double calcularTiempoPromedioEntrega();
     DonacionDto progresarEstadoArmadoPaquete(Integer idDonacion, String ciEncargado, String imagen);
+    DonacionDto cambiarDestinoDonacion(Integer idDonacion, DestinoDto destinoDto);
 
 }

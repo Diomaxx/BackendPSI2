@@ -19,5 +19,6 @@ public interface SolicitudService {
     List<SolicitudDto> getSolicitudesAprobadas();
     List<SolicitudDonacionDto> obtenerSolicitudesConDonacionesPendientes();
     List<SolicitudConPersonalDto> getSolicitudesConPersonal();
+    void aceptarAyuda(Integer idSolicitud);
 
 }

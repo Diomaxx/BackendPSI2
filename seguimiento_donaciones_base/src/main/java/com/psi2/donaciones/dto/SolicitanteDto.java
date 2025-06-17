@@ -15,4 +15,5 @@ public class SolicitanteDto {
     private String apellido;
     private String telefono;
     private String ci;
+    private String email;
 }

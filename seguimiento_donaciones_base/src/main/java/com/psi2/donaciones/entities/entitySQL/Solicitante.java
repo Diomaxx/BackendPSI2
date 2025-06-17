@@ -22,5 +22,7 @@ public class Solicitante {
     private String ci;
 
     private String telefono;
+    
+    private String email;
 
 }

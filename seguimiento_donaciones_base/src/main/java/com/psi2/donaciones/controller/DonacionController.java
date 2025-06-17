@@ -1,6 +1,7 @@
 package com.psi2.donaciones.controller;
 
 import com.psi2.donaciones.dto.AgradecimientoDto;
+import com.psi2.donaciones.dto.DestinoDto;
 import com.psi2.donaciones.dto.DonacionDto;
 import com.psi2.donaciones.dto.NewDonacionDto;
 import com.psi2.donaciones.entities.entitySQL.Donacion;
@@ -85,5 +86,16 @@ public class DonacionController {
     @GetMapping("/total")
     public ResponseEntity<Long> obtenerMetricasGenerales() {
         return ResponseEntity.ok(donacionService.contarTotalDonaciones());
+    }
+
+
+    @PostMapping("/cambiar-destino/{idDonacion}")
+    public ResponseEntity<?> cambiarDestinoDonacion(@PathVariable Integer idDonacion, @RequestBody DestinoDto destinoDto) {
+        try {
+            DonacionDto donacionActualizada = donacionService.cambiarDestinoDonacion(idDonacion, destinoDto);
+            return ResponseEntity.ok(donacionActualizada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        } 
     }
 }

@@ -21,7 +21,7 @@ public class CrearSSDRequest {
     private String apellidoSolicitante;
     private String ciSolicitante;
     private String telefonoSolicitante;
-
+    private String emailSolicitante;
     private Date fechaInicioIncendio;
     private List<String> listaProductos;
     private Integer cantidadPersonas;

@@ -15,6 +15,7 @@ import com.psi2.donaciones.request.CrearSSDRequest;
 import com.psi2.donaciones.service.DonacionService;
 import com.psi2.donaciones.service.InventarioExternoService;
 import com.psi2.donaciones.service.SolicitudSinResponderService;
+import com.psi2.donaciones.config.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,9 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    
+    @Autowired
+    private EmailService emailService;
     
     @Override
     public List<SolicitudSinResponderDto> obtenerTodasSolicitudes() {
@@ -115,6 +119,7 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
             nuevoSolicitante.setApellido(request.getApellidoSolicitante());
             nuevoSolicitante.setCi(request.getCiSolicitante());
             nuevoSolicitante.setTelefono(request.getTelefonoSolicitante());
+            nuevoSolicitante.setEmail(request.getEmailSolicitante());
             solicitanteGuardado = solicitanteRepository.save(nuevoSolicitante);
         }
         SolicitudesSinResponder solicitud = new SolicitudesSinResponder();
@@ -222,6 +227,12 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
             
             donacionService.crearDonacionDesdeSolicitud(solicitud.getIdSolicitud(),ciEncargado);
             
+
+            if (solicitante.getEmail() != null && !solicitante.getEmail().isEmpty()) {
+                enviarCorreoAprobacion(solicitante, destino, listaProductosFormateada);
+        
+            }
+
             solicitudesSinResponderRepository.deleteById(idSolicitud);
 
 
@@ -286,6 +297,13 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
 
             solicitudRepository.save(solicitud);
 
+
+            if (solicitante.getEmail() != null && !solicitante.getEmail().isEmpty()) {
+       
+                enviarCorreoRechazo(solicitante, destino, justificacion, listaProductosFormateada);
+
+            }
+
             solicitudesSinResponderRepository.deleteById(idSolicitud);
 
             return true;
@@ -311,7 +329,6 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
                     int cantidadActual = productosRequeridos.getOrDefault(idProducto, 0);
                     productosRequeridos.put(idProducto, cantidadActual + cantidad);
                 } catch (NumberFormatException e) {
-                    // Ignora formato correcto
                 }
             }
         }
@@ -397,4 +414,55 @@ public class SolicitudSinResponderServiceImpl implements SolicitudSinResponderSe
         
         return productos;
     }
+    
+
+    private void enviarCorreoAprobacion(Solicitante solicitante, Destino destino, List<String> productos) {
+        String asunto = "Solicitud de Donación Aprobada";
+        
+        StringBuilder contenido = new StringBuilder();
+        contenido.append("Estimado/a ").append(solicitante.getNombre()).append(" ").append(solicitante.getApellido()).append(",\n\n");
+        contenido.append("Nos complace informarle que su solicitud de donación ha sido APROBADA.\n\n");
+        contenido.append("Detalles de la solicitud:\n");
+        contenido.append("- Destino: ").append(destino.getDireccion()).append(", ").append(destino.getProvincia()).append("\n");
+        contenido.append("- Comunidad: ").append(destino.getComunidad()).append("\n");
+        contenido.append("- Productos aprobados:\n");
+        
+        for (String producto : productos) {
+            contenido.append("  • ").append(producto.replace(":", " - Cantidad: ")).append("\n");
+        }
+        
+        contenido.append("\nLa donación será preparada y enviada en los próximos días.\n");
+        contenido.append("Recibirá una nueva notificación cuando el paquete esté en camino hacia su destino.\n\n");
+        contenido.append("Atentamente,\n");
+        contenido.append("Equipo de D.A.S.\n");
+
+        emailService.enviarCorreo(solicitante.getEmail(), asunto, contenido.toString());
+    }
+    
+
+    private void enviarCorreoRechazo(Solicitante solicitante, Destino destino, String motivoRechazo, List<String> productos) {
+        String asunto = "Solicitud de Donación Rechazada";
+        
+        StringBuilder contenido = new StringBuilder();
+        contenido.append("Estimado/a ").append(solicitante.getNombre()).append(" ").append(solicitante.getApellido()).append(",\n\n");
+        contenido.append("Le informamos que su solicitud de donación ha sido rechazada.\n\n");
+        contenido.append("Detalles de la solicitud:\n");
+        contenido.append("- Destino: ").append(destino.getDireccion()).append(", ").append(destino.getProvincia()).append("\n");
+        contenido.append("- Comunidad: ").append(destino.getComunidad()).append("\n");
+        contenido.append("- Productos solicitados:\n");
+        
+        for (String producto : productos) {
+            contenido.append("  • ").append(producto.replace(":", " - Cantidad: ")).append("\n");
+        }
+        
+        contenido.append("\nMotivo de la revisión:\n");
+        contenido.append(motivoRechazo).append("\n\n");
+        contenido.append("Si tiene alguna pregunta o desea realizar una nueva solicitud, ");
+        contenido.append("no dude en contactarse con nuestro equipo.\n\n");
+        contenido.append("Atentamente,\n");
+        contenido.append("Equipo de D.A.S.\n");
+
+        emailService.enviarCorreo(solicitante.getEmail(), asunto, contenido.toString());
+    }
+
 } 

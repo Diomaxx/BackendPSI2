@@ -18,6 +18,7 @@ public class Solicitud {
     private java.sql.Date fechaInicioIncendio;
     private java.sql.Date fechaSolicitud;
     private Boolean aprobada;
+    private Boolean apoyoaceptado;
     private Integer cantidadPersonas;
     private String justificacion;
     private String categoria;

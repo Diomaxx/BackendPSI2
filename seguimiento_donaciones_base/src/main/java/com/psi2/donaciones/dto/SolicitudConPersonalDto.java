@@ -19,5 +19,6 @@ public class SolicitudConPersonalDto {
     private String listaProductos;
     private int idSolicitante;
     private int idDestino;
+    private Boolean apoyoaceptado;
     private Map<String, Integer> personalNecesario;
 }

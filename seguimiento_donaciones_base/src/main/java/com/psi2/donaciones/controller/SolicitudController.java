@@ -50,6 +50,16 @@ public class SolicitudController {
         return ResponseEntity.ok(aprobadas);
     }
 
+    @PostMapping("/aceptar-ayuda/{id}")
+    public ResponseEntity<String> aceptarAyuda(@PathVariable Integer id) {
+        try {
+            solicitudService.aceptarAyuda(id);
+            return ResponseEntity.ok("Ayuda aceptada exitosamente para la solicitud ID: " + id);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 
 
 

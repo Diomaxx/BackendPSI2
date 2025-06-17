@@ -145,7 +145,8 @@ public class SolicitudServiceImpl implements SolicitudService {
             SolicitanteDto solicitanteDto = solicitante != null ? new SolicitanteDto(
                     solicitante.getIdSolicitante(), solicitante.getNombre(),
                     solicitante.getApellido(), solicitante.getTelefono(),
-                    solicitante.getCi()
+                    solicitante.getCi(),
+                    solicitante.getEmail()
             ) : null;
 
             DestinoDto destinoDto = destino != null ? new DestinoDto(destino.getIdDestino(), destino.getDireccion(),
@@ -170,7 +171,8 @@ public class SolicitudServiceImpl implements SolicitudService {
 
             SolicitanteDto solicitanteDto = solicitante != null ? new SolicitanteDto(
                     solicitante.getIdSolicitante(), solicitante.getNombre(), solicitante.getApellido(), solicitante.getTelefono(),
-                    solicitante.getCi()
+                    solicitante.getCi(),
+                    solicitante.getEmail()
             ) : null;
 
             DestinoDto destinoDto = destino != null ? new DestinoDto(
@@ -251,6 +253,7 @@ public class SolicitudServiceImpl implements SolicitudService {
                         s.getListaProductos(),
                         s.getSolicitante().getIdSolicitante(),
                         s.getDestino().getIdDestino(),
+                        s.getApoyoaceptado(),
                         calcularPersonalNecesario(
                                 s.getCategoria(),
                                 s.getCantidadPersonas(),
@@ -259,6 +262,16 @@ public class SolicitudServiceImpl implements SolicitudService {
                         )
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void aceptarAyuda(Integer idSolicitud) {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
+        
+        solicitud.setApoyoaceptado(true);
+        
+        solicitudRepository.save(solicitud);
     }
 
     private Map<String, Integer> calcularPersonalNecesario(String categoria, int cantidadPersonas, Date fechaInicio, Date fechaSolicitud) {

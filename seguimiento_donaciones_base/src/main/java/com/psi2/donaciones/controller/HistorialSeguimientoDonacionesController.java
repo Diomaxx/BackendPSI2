@@ -1,6 +1,7 @@
 package com.psi2.donaciones.controller;
 
 import com.psi2.donaciones.dto.HistorialSeguimientoDonacionesDto;
+import com.psi2.donaciones.dto.ReporteCompletoHistorialDto;
 import com.psi2.donaciones.service.HistorialSeguimientoDonacionesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,13 @@ public class HistorialSeguimientoDonacionesController {
     public ResponseEntity<List<HistorialSeguimientoDonacionesDto>> getHistorialByDonacion(@PathVariable Integer donacionId) {
         List<HistorialSeguimientoDonacionesDto> historial = historialSeguimientoDonacionesService.getHistorialByDonacionId(donacionId);
         return new ResponseEntity<>(historial, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/reporte-completo/{donacionId}")
+    public ResponseEntity<ReporteCompletoHistorialDto> getReporteCompletoHistorial(@PathVariable Integer donacionId) {
+        ReporteCompletoHistorialDto reporte = historialSeguimientoDonacionesService.generarReporteCompletoHistorial(donacionId);
+        return new ResponseEntity<>(reporte, HttpStatus.OK);
     }
 
 }

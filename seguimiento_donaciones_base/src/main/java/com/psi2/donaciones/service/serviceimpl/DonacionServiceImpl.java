@@ -13,6 +13,7 @@ import com.psi2.donaciones.repository.*;
 import com.psi2.donaciones.service.DonacionService;
 import com.psi2.donaciones.service.HistorialSeguimientoDonacionesService;
 import com.psi2.donaciones.service.SeguimientoDonacionService;
+import com.psi2.donaciones.config.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,9 +51,15 @@ public class DonacionServiceImpl implements DonacionService {
     private NotificacionesRepository notificacionesRepository;
 
     @Autowired
+    private DestinoRepository destinoRepository;
+
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
     private InventarioExternoServiceImpl inventarioExternoServiceImpl;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public List<DonacionDto> getAllDonaciones() {
@@ -220,6 +228,14 @@ public class DonacionServiceImpl implements DonacionService {
 
             if (!seguimiento.getEstado().startsWith("En camino")) {
                 nuevoEstado = "En camino - Etapa 1";
+
+                try {
+                    enviarCorreoEnCamino(donacion);
+                } catch (Exception e) {
+                    System.err.println("Error al enviar correo de donación en camino: " + e.getMessage());
+                }
+
+
             } else {
                 switch (seguimiento.getEstado()) {
                     case "En camino - Etapa 1":
@@ -458,6 +474,117 @@ public class DonacionServiceImpl implements DonacionService {
             combinado.setDonantes(donantes);
             return combinado;
         }).collect(Collectors.toList());
+    }
+    
+
+    private void enviarCorreoEnCamino(Donacion donacion) {
+        if (donacion.getSolicitud() == null || donacion.getSolicitud().getSolicitante() == null) {
+            System.err.println("La donación no tiene una solicitud o solicitante asociado");
+            return;
+        }
+        
+        var solicitante = donacion.getSolicitud().getSolicitante();
+        var destino = donacion.getSolicitud().getDestino();
+        
+        if (solicitante.getEmail() == null || solicitante.getEmail().isEmpty()) {
+            System.err.println("El solicitante no tiene un email configurado");
+            return;
+        }
+        
+        String asunto = "Su donación está en camino - Código: " + donacion.getCodigo();
+        
+        StringBuilder contenido = new StringBuilder();
+        contenido.append("Estimado/a ").append(solicitante.getNombre()).append(" ").append(solicitante.getApellido()).append(",\n\n");
+        contenido.append("¡Excelentes noticias! Su donación ya está en camino hacia su destino.\n\n");
+        contenido.append("Detalles del envío:\n");
+        contenido.append("- Código de donación: ").append(donacion.getCodigo()).append("\n");
+        contenido.append("- Categoría: ").append(donacion.getCategoria()).append("\n");
+        contenido.append("- Destino: ").append(destino != null ? destino.getDireccion() + ", " + destino.getProvincia() : "No especificado").append("\n");
+        
+        if (destino != null && destino.getComunidad() != null) {
+            contenido.append("- Comunidad: ").append(destino.getComunidad()).append("\n");
+        }
+
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        contenido.append("- Fecha de salida: ").append(dateFormatter.format(new Date())).append("\n\n");
+        
+        contenido.append("Nuestro equipo se encuentra en ruta hacia el destino indicado. ");
+        contenido.append("Atentamente,\n");
+        contenido.append("Equipo de D.A.S.\n");
+
+        emailService.enviarCorreo(solicitante.getEmail(), asunto, contenido.toString());
+    }
+
+
+    @Override
+    public DonacionDto cambiarDestinoDonacion(Integer idDonacion, DestinoDto destinoDto) {
+        Optional<Donacion> donacionOpt = donacionRepository.findById(idDonacion);
+        if (donacionOpt.isEmpty()) {
+            throw new RuntimeException("Donación no encontrada con ID: " + idDonacion);
+        }
+
+        Donacion donacion = donacionOpt.get();
+        
+        if (donacion.getSolicitud() == null) {
+            throw new RuntimeException("La donación no tiene una solicitud asociada");
+        }
+
+        Solicitud solicitud = donacion.getSolicitud();
+        
+        Destino destinoActual = solicitud.getDestino();
+        if (destinoActual == null) {
+            throw new RuntimeException("La solicitud no tiene un destino asignado");
+        }
+
+        if (destinoDto.getProvincia() != null && !destinoDto.getProvincia().trim().isEmpty()) {
+            if (!destinoDto.getProvincia().equals(destinoActual.getProvincia())) {
+                destinoActual.setProvincia(destinoDto.getProvincia());
+            }
+        }
+        
+        if (destinoDto.getComunidad() != null && !destinoDto.getComunidad().trim().isEmpty()) {
+            if (!destinoDto.getComunidad().equals(destinoActual.getComunidad())) {
+                destinoActual.setComunidad(destinoDto.getComunidad());
+            }
+        }
+        
+        if (destinoDto.getDireccion() != null && !destinoDto.getDireccion().trim().isEmpty()) {
+            if (!destinoDto.getDireccion().equals(destinoActual.getDireccion())) {
+                destinoActual.setDireccion(destinoDto.getDireccion());
+            }
+        }
+        
+        if (destinoDto.getLatitud() != null) {
+            if (!destinoDto.getLatitud().equals(destinoActual.getLatitud())) {
+                destinoActual.setLatitud(destinoDto.getLatitud());
+            }
+        }
+        
+        if (destinoDto.getLongitud() != null) {
+            if (!destinoDto.getLongitud().equals(destinoActual.getLongitud())) {
+                destinoActual.setLongitud(destinoDto.getLongitud());
+            }
+        }
+        
+
+        destinoRepository.save(destinoActual);
+
+        solicitudRepository.save(solicitud);
+        
+
+        NotificacionesDto notificacionDto = new NotificacionesDto();
+        notificacionDto.setTitulo("Destino Modificado");
+        notificacionDto.setDescripcion("Se ha modificado el destino de la donación \"" + donacion.getCodigo() + "\" a: " + destinoDto.getDireccion() + ", " + destinoDto.getProvincia());
+        notificacionDto.setTipo("Modificación");
+        notificacionDto.setNivelSeveridad("Media");
+        notificacionDto.setFechaCreacion(new java.util.Date());
+
+        messagingTemplate.convertAndSend("/topic/nueva-notificacion", notificacionDto);
+
+        Notificaciones notificacion = NotificacionesMapper.toEntity(notificacionDto);
+        notificacionesRepository.save(notificacion);
+
+        return DonacionMapper.toDto(donacion);
     }
 
 
