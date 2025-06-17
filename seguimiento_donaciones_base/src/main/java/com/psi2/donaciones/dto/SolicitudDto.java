@@ -22,5 +22,6 @@ public class SolicitudDto {
     private String listaProductos;
     private Integer idSolicitante;
     private Integer idDestino;
+    private Boolean apoyoaceptado;
 
 }
