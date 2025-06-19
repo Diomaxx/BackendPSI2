@@ -83,7 +83,6 @@ public class HistorialSeguimientoDonacionesServiceImpl implements HistorialSegui
             .orElseThrow(() -> new RuntimeException("Donación no encontrada con ID: " + donacionId));
         
         ReporteCompletoHistorialDto reporte = new ReporteCompletoHistorialDto();
-        
         reporte.setIdDonacion(donacion.getIdDonacion());
         reporte.setCodigoDonacion(donacion.getCodigo());
         reporte.setFechaAprobacion(donacion.getFechaAprobacion());
@@ -123,7 +122,6 @@ public class HistorialSeguimientoDonacionesServiceImpl implements HistorialSegui
                 reporte.setLongitudDestino(donacion.getSolicitud().getDestino().getLongitud());
             }
         }
-        
         List<SeguimientoDonacion> seguimientos = seguimientoDonacionRepository.findAll()
             .stream()
             .filter(s -> s.getIdDonacion() != null && s.getIdDonacion().equals(String.valueOf(donacion.getIdDonacion())))
@@ -136,7 +134,6 @@ public class HistorialSeguimientoDonacionesServiceImpl implements HistorialSegui
             reporte.setLongitudActual(seguimientoActual.getLongitud());
             reporte.setTimestampActual(seguimientoActual.getTimestamp());
         }
-        
         List<HistorialSeguimientoDonaciones> historial = historialSeguimientoDonacionesRepository
             .findByDonacion_IdDonacion(donacion.getIdDonacion())
             .stream()
@@ -144,7 +141,6 @@ public class HistorialSeguimientoDonacionesServiceImpl implements HistorialSegui
             .collect(Collectors.toList());
         
         List<ReporteCompletoHistorialDto.PuntoHistorialDto> puntosHistorial = new ArrayList<>();
-        
         for (HistorialSeguimientoDonaciones punto : historial) {
             ReporteCompletoHistorialDto.PuntoHistorialDto puntoDto = new ReporteCompletoHistorialDto.PuntoHistorialDto();
             puntoDto.setIdHistorial(punto.getIdHistorial());
@@ -159,7 +155,6 @@ public class HistorialSeguimientoDonacionesServiceImpl implements HistorialSegui
             
             puntosHistorial.add(puntoDto);
         }
-        
         reporte.setPuntosHistorial(puntosHistorial);
         
         reporte.setTotalPuntosHistorial(puntosHistorial.size());

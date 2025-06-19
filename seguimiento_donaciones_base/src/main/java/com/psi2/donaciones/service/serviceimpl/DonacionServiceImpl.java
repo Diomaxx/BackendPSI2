@@ -420,7 +420,7 @@ public class DonacionServiceImpl implements DonacionService {
         return prefijoNombre + numeroFormateado;
     }
 
-    //
+
     @Override
     public double calcularTiempoPromedioEntrega() {
         List<Donacion> donaciones = donacionRepository.findAll();
